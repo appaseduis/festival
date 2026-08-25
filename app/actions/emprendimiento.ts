@@ -13,7 +13,7 @@ export async function crearEmprendimientoAction(
   const parsed = emprendimientoSchema.safeParse(data);
 
   if (!parsed.success) {
-    const primerError = parsed.error.errors[0]?.message ?? "Datos inválidos";
+    const primerError = parsed.error.issues[0]?.message ?? "Datos inválidos";
     return { ok: false, error: primerError };
   }
 

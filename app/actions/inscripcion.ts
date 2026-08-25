@@ -17,7 +17,7 @@ export async function crearInscripcionAction(
   });
 
   if (!parsed.success) {
-    const primerError = parsed.error.errors[0]?.message ?? "Datos inválidos";
+    const primerError = parsed.error.issues[0]?.message ?? "Datos inválidos";
     return { ok: false, error: primerError };
   }
 

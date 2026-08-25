@@ -65,7 +65,6 @@ export default function FormularioEditarInscrito({
 
     const resp = await actualizarInscritoAction(inscrito.id, {
       ...form,
-      actividad_id: form.actividad_id || null,
       comentarios: form.comentarios || null,
       acompanantes,
     });

@@ -14,11 +14,11 @@ export const emprendimientoSchema = z
     instagram: z.string().trim().max(200).nullable(),
     pagina_web: z.string().trim().max(200).nullable(),
     categoria: z.enum(CATEGORIAS_EMPRENDIMIENTO as [string, ...string[]], {
-      required_error: "Selecciona una categoría",
+      message: "Selecciona una categoría",
     }),
     categoria_otro: z.string().trim().max(100).nullable(),
     tipo_egresado: z.enum(["socio", "no_socio"], {
-      required_error: "Indica si eres socio o no socio",
+      message: "Indica si eres socio o no socio",
     }),
     necesita_electricidad: z.boolean(),
   })
