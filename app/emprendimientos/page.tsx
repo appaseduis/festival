@@ -44,7 +44,7 @@ export default function PaginaEmprendimientos() {
             <ul className="space-y-0.5">
               <li>Viernes 09 de octubre: 2:00 p.m. a 7:00 p.m.</li>
               <li>Sábado 10 de octubre: 9:00 a.m. a 7:00 p.m.</li>
-              <li>Domingo 11 de octubre: 8:00 a.m. a 12:00 p.m.</li>
+              <li>Domingo 11 de octubre: 9:00 a.m. a 1:00 p.m.</li>
             </ul>
           </div>
 
@@ -66,7 +66,7 @@ export default function PaginaEmprendimientos() {
 
           <p className="text-xs text-gray-500">
             👨‍👩‍👧‍👦 La programación cultural y recreativa es de ingreso libre para tu familia
-            e invitados — solo el egresado inscrito cancela el valor de participación.
+            e invitados
           </p>
 
           <p className="text-xs bg-amber-50 border border-amber-200 text-amber-900 rounded-lg p-3">
