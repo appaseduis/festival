@@ -1,0 +1,26 @@
+@import "tailwindcss";
+
+@theme {
+  --color-navy: #002855;
+  --color-uis-green: #7ab800;
+  --color-cyan: #00a3e0;
+  --color-turquoise: #52b4d8;
+  --color-teal: #2bb673;
+  --color-bg-soft: #f4f6f9;
+
+  --font-display: var(--font-display), sans-serif;
+  --font-body: var(--font-body), sans-serif;
+}
+
+body {
+  font-family: var(--font-body);
+}
+
+h1, h2, h3, .font-display {
+  font-family: var(--font-display);
+}
+
+.input {
+  @apply w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-navy
+    focus:outline-none focus:ring-2 focus:ring-cyan focus:border-transparent;
+}
