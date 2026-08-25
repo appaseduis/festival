@@ -70,6 +70,11 @@ export default function PaginaEmprendimientos() {
           </p>
 
           <p className="text-xs bg-amber-50 border border-amber-200 text-amber-900 rounded-lg p-3">
+            📌 Los emprendimientos deben ser de <strong>origen propio</strong> del egresado
+            participante. No se aceptan reventas ni representación de marcas de terceros.
+          </p>
+
+          <p className="text-xs bg-amber-50 border border-amber-200 text-amber-900 rounded-lg p-3">
             Este formulario es una <strong>preinscripción</strong>. No se realiza ningún
             pago en este momento — nuestro equipo revisará tu emprendimiento y te
             contactará para confirmar tu participación y coordinar el pago.
