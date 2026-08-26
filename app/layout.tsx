@@ -14,7 +14,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Festival del Egresado UIS V2",
+  title: "Festival del Egresado UIS",
   description: "Inscripción y control del Festival del Egresado UIS V2",
 };
 
