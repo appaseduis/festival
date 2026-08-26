@@ -34,9 +34,18 @@ export default function PaginaEmprendimientos() {
             Festival de Emprendedores UIS
           </h1>
           <p className="text-[#002855]/70 mt-2 text-sm">
-            Salón Principal, Casona La Perla — durante el Primer Festival del Egresado UIS
+            Salón Principal, Casona La Perla — durante el Segundo Festival del Egresado UIS
           </p>
         </header>
+
+        <div className="bg-red-50 border-2 border-red-300 rounded-2xl p-4 sm:p-5 mb-6 text-center">
+          <p className="text-red-800 font-semibold text-sm sm:text-base">
+            ⏰ Fecha límite de preinscripción: <strong>15 de septiembre de 2026</strong>
+          </p>
+          <p className="text-red-700 text-xs mt-1">
+            No se recibirán preinscripciones después de esta fecha.
+          </p>
+        </div>
 
         <div className="bg-white rounded-2xl shadow-sm border border-gray-200 border-t-4 border-t-uis-green p-5 sm:p-6 md:p-8 mb-6 space-y-4 text-sm text-gray-700">
           <div>
@@ -70,7 +79,7 @@ export default function PaginaEmprendimientos() {
           </p>
 
           <p className="text-xs bg-amber-50 border border-amber-200 text-amber-900 rounded-lg p-3">
-            📌 Los emprendimientos deben ser de <strong>origen propio</strong> del egresado
+            📌 Los productos o servicios de los emprendimientos deben ser de <strong>origen propio</strong> del egresado
             participante. No se aceptan reventas ni representación de marcas de terceros.
           </p>
 
