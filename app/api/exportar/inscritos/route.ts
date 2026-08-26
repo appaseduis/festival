@@ -10,11 +10,27 @@ export async function GET() {
 
   const { data, error } = await supabase
     .from("inscritos")
-    .select("*, tallas(nombre), actividades(nombre)")
+    .select("*, tallas(nombre)")
     .order("created_at", { ascending: true });
 
   if (error || !data) {
+    console.error("Error obteniendo inscritos para exportar:", error);
     return NextResponse.json({ error: "No se pudieron obtener los inscritos" }, { status: 500 });
+  }
+
+  // Traemos las actividades de cada inscrito desde la tabla intermedia
+  // (selección múltiple), en una sola consulta adicional.
+  const { data: actividadesRelacion } = await supabase
+    .from("inscritos_actividades")
+    .select("inscrito_id, actividades(nombre)");
+
+  const actividadesPorInscrito = new Map<string, string[]>();
+  for (const rel of actividadesRelacion ?? []) {
+    const nombre = (rel.actividades as unknown as { nombre: string } | null)?.nombre;
+    if (!nombre) continue;
+    const lista = actividadesPorInscrito.get(rel.inscrito_id) ?? [];
+    lista.push(nombre);
+    actividadesPorInscrito.set(rel.inscrito_id, lista);
   }
 
   const workbook = new ExcelJS.Workbook();
@@ -29,7 +45,7 @@ export async function GET() {
     { header: "Programa académico", key: "programa_academico" },
     { header: "Tipo egresado", key: "tipo_egresado" },
     { header: "Talla", key: "talla" },
-    { header: "Actividad", key: "actividad" },
+    { header: "Actividades", key: "actividades" },
     { header: "Acompañantes", key: "cantidad_acompanantes" },
     { header: "Total", key: "total" },
     { header: "Estado pago", key: "estado_pago" },
@@ -47,7 +63,7 @@ export async function GET() {
       programa_academico: inscrito.programa_academico,
       tipo_egresado: inscrito.tipo_egresado === "socio" ? "Socio" : "No socio",
       talla: (inscrito.tallas as { nombre: string } | null)?.nombre ?? "",
-      actividad: (inscrito.actividades as { nombre: string } | null)?.nombre ?? "",
+      actividades: (actividadesPorInscrito.get(inscrito.id) ?? []).join(", "),
       cantidad_acompanantes: inscrito.cantidad_acompanantes,
       total: Number(inscrito.total),
       estado_pago: inscrito.estado_pago,
