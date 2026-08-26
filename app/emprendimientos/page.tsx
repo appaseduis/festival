@@ -1,6 +1,11 @@
+"use client";
+
+import { useState } from "react";
 import FormularioEmprendimiento from "@/components/emprendimientos/FormularioEmprendimiento";
 
 export default function PaginaEmprendimientos() {
+  const [enviado, setEnviado] = useState(false);
+
   return (
     <main className="min-h-screen bg-[#F4F6F9]">
       {/* Banner institucional */}
@@ -38,17 +43,19 @@ export default function PaginaEmprendimientos() {
           </p>
         </header>
 
-        <div className="bg-red-50 border-2 border-red-300 rounded-2xl p-4 sm:p-5 mb-6 text-center">
-          <p className="text-red-800 font-semibold text-sm sm:text-base">
-            ⏰ Fecha límite de preinscripción: <strong>15 de septiembre de 2026</strong>
-          </p>
-          <p className="text-red-700 text-xs mt-1">
-            No se recibirán preinscripciones después de esta fecha.
-          </p>
-        </div>
+        {!enviado && (
+          <div className="bg-red-50 border-2 border-red-300 rounded-2xl p-4 sm:p-5 mb-6 text-center">
+            <p className="text-red-800 font-semibold text-sm sm:text-base">
+              ⏰ Fecha límite de preinscripción: <strong>15 de septiembre de 2026</strong>
+            </p>
+            <p className="text-red-700 text-xs mt-1">
+              No se recibirán preinscripciones después de esta fecha.
+            </p>
+          </div>
+        )}
 
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-200 border-t-4 border-t-uis-green p-5 sm:p-6 md:p-8 mb-6 space-y-4 text-sm text-gray-700">
-          <div>
+        {enviado ? (
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 border-t-4 border-t-uis-green p-5 sm:p-6 md:p-8 mb-6 space-y-2 text-sm text-gray-700">
             <p className="font-semibold text-navy mb-1">🗓️ Fechas y horarios</p>
             <ul className="space-y-0.5">
               <li>Viernes 09 de octubre: 2:00 p.m. a 7:00 p.m.</li>
@@ -56,41 +63,53 @@ export default function PaginaEmprendimientos() {
               <li>Domingo 11 de octubre: 9:00 a.m. a 1:00 p.m.</li>
             </ul>
           </div>
+        ) : (
+          <div className="bg-white rounded-2xl shadow-sm border border-gray-200 border-t-4 border-t-uis-green p-5 sm:p-6 md:p-8 mb-6 space-y-4 text-sm text-gray-700">
+            <div>
+              <p className="font-semibold text-navy mb-1">🗓️ Fechas y horarios</p>
+              <ul className="space-y-0.5">
+                <li>Viernes 09 de octubre: 2:00 p.m. a 7:00 p.m.</li>
+                <li>Sábado 10 de octubre: 9:00 a.m. a 7:00 p.m.</li>
+                <li>Domingo 11 de octubre: 9:00 a.m. a 1:00 p.m.</li>
+              </ul>
+            </div>
 
-          <div>
-            <p className="font-semibold text-navy mb-1">💰 Valores de participación</p>
-            <p>
-              Incluye espacio de exhibición, logística general del evento y equipamiento
-              básico del stand (1 mesa y 2 sillas):
+            <div>
+              <p className="font-semibold text-navy mb-1">💰 Valores de participación</p>
+              <p>
+                Incluye espacio de exhibición, logística general del evento y equipamiento
+                básico del stand (1 mesa y 2 sillas):
+              </p>
+              <ul className="mt-1 space-y-0.5">
+                <li>Egresado NO asociado: <strong>$220.000</strong></li>
+                <li>Egresado Asociado ASEDUIS: <strong>$190.000</strong></li>
+              </ul>
+              <p className="mt-1 text-xs text-gray-500">
+                ⚡ La conexión eléctrica tiene un costo adicional de $30.000, que se confirma
+                al finalizar este formulario.
+              </p>
+            </div>
+
+            <p className="text-xs text-gray-500">
+              👨‍👩‍👧‍👦 La programación cultural y recreativa es de ingreso libre para tu familia
+              e invitados
             </p>
-            <ul className="mt-1 space-y-0.5">
-              <li>Egresado NO asociado: <strong>$220.000</strong></li>
-              <li>Egresado Asociado ASEDUIS: <strong>$190.000</strong></li>
-            </ul>
-            <p className="mt-1 text-xs text-gray-500">
-              ⚡ La conexión eléctrica tiene un costo adicional de $30.000, que se confirma
-              al finalizar este formulario.
+
+            <p className="text-xs bg-amber-50 border border-amber-200 text-amber-900 rounded-lg p-3">
+              📌 Los productos o servicios de los emprendimientos deben ser de{" "}
+              <strong>origen propio</strong> del egresado participante. No se aceptan
+              reventas ni representación de marcas de terceros.
+            </p>
+
+            <p className="text-xs bg-amber-50 border border-amber-200 text-amber-900 rounded-lg p-3">
+              Este formulario es una <strong>preinscripción</strong>. No se realiza ningún
+              pago en este momento — nuestro equipo revisará tu emprendimiento y te
+              contactará para confirmar tu participación y coordinar el pago.
             </p>
           </div>
+        )}
 
-          <p className="text-xs text-gray-500">
-            👨‍👩‍👧‍👦 La programación cultural y recreativa es de ingreso libre para tu familia
-            e invitados
-          </p>
-
-          <p className="text-xs bg-amber-50 border border-amber-200 text-amber-900 rounded-lg p-3">
-            📌 Los productos o servicios de los emprendimientos deben ser de <strong>origen propio</strong> del egresado
-            participante. No se aceptan reventas ni representación de marcas de terceros.
-          </p>
-
-          <p className="text-xs bg-amber-50 border border-amber-200 text-amber-900 rounded-lg p-3">
-            Este formulario es una <strong>preinscripción</strong>. No se realiza ningún
-            pago en este momento — nuestro equipo revisará tu emprendimiento y te
-            contactará para confirmar tu participación y coordinar el pago.
-          </p>
-        </div>
-
-        <FormularioEmprendimiento />
+        <FormularioEmprendimiento onEnviadoChange={setEnviado} />
       </div>
     </main>
   );

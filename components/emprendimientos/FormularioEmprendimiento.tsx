@@ -34,7 +34,11 @@ const ESTADO_INICIAL: FormState = {
   necesita_electricidad: null,
 };
 
-export default function FormularioEmprendimiento() {
+export default function FormularioEmprendimiento({
+  onEnviadoChange,
+}: {
+  onEnviadoChange?: (enviado: boolean) => void;
+}) {
   const [form, setForm] = useState<FormState>(ESTADO_INICIAL);
   const [error, setError] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
@@ -89,6 +93,7 @@ export default function FormularioEmprendimiento() {
     }
 
     setEnviado(true);
+    onEnviadoChange?.(true);
   }
 
   if (enviado) {
@@ -99,8 +104,9 @@ export default function FormularioEmprendimiento() {
             ¡Preinscripción enviada correctamente! 🎉
           </p>
           <p className="text-sm text-gray-600">
-            Nuestro equipo revisará tu emprendimiento y te contactará por correo o
-            teléfono para confirmar tu participación.
+            Nuestro equipo revisará tu emprendimiento. El equipo se contactará a
+            partir del <strong>16 de septiembre de 2026</strong> para confirmar tu
+            participación.
           </p>
         </div>
         <Footer />
