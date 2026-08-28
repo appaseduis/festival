@@ -53,7 +53,7 @@ const ESTADO_INICIAL: FormState = {
   cantidad_acompanantes: 0,
   acompanantes: [],
 };
-const [mostrarGuiaTallas, setMostrarGuiaTallas] = useState(false);
+
 
 const TOTAL_PASOS = 5;
 const NOMBRES_PASOS = [
@@ -82,7 +82,7 @@ export default function WizardInscripcion({ config, tallas, actividades }: Props
   const [infoBancolombia, setInfoBancolombia] = useState<{ qr_url: string | null; datos: string | null } | null>(null);
   const [mostrarQRGrande, setMostrarQRGrande] = useState(false);
   const [llaveCopiada, setLlaveCopiada] = useState(false);
-
+  const [mostrarGuiaTallas, setMostrarGuiaTallas] = useState(false);
   const LLAVE_BANCOLOMBIA = "0090310223";
 
   async function copiarLlave() {
