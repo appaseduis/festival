@@ -14,6 +14,7 @@ import type {
 import type { ReactNode } from "react";
 import BotonPagoBold from "@/components/inscripcion/BotonPagoBold";
 import Footer from "@/components/shared/Footer";
+import ModalGuiaTallas from "@/components/inscripcion/ModalGuiaTallas";
 
 type Props = {
   config: ConfiguracionPublica;
@@ -52,6 +53,7 @@ const ESTADO_INICIAL: FormState = {
   cantidad_acompanantes: 0,
   acompanantes: [],
 };
+const [mostrarGuiaTallas, setMostrarGuiaTallas] = useState(false);
 
 const TOTAL_PASOS = 5;
 const NOMBRES_PASOS = [
@@ -345,7 +347,17 @@ export default function WizardInscripcion({ config, tallas, actividades }: Props
               onChange={(e) => actualizarCampo("programa_academico", e.target.value)}
             />
           </Campo>
-          <Campo label="Talla de camiseta">
+                    <label className="block">
+            <span className="flex items-center justify-between mb-1">
+              <span className="text-sm font-medium text-gray-700">Talla de camiseta</span>
+              <button
+                type="button"
+                onClick={() => setMostrarGuiaTallas(true)}
+                className="text-xs text-navy underline font-medium"
+              >
+                Guía de tallas
+              </button>
+            </span>
             <select
               className="input"
               value={form.talla_id}
@@ -358,7 +370,7 @@ export default function WizardInscripcion({ config, tallas, actividades }: Props
                 </option>
               ))}
             </select>
-          </Campo>
+          </label>
           <Campo label="¿Eres socio o no socio de ASEDUIS?">
             <div className="flex gap-3">
               <button
@@ -695,6 +707,7 @@ export default function WizardInscripcion({ config, tallas, actividades }: Props
           )}
         </div>
       )}
+      {mostrarGuiaTallas && <ModalGuiaTallas onCerrar={() => setMostrarGuiaTallas(false)} />}
     </div>
   );
 }
