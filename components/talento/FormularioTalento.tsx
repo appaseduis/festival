@@ -177,9 +177,10 @@ export default function FormularioTalento({
         />
       </Campo>
 
-      <Campo label="Programa académico UIS del que eres egresado">
-        <input
+      <Campo label="¿Qué vínculo tienes con la UIS?">
+        <textarea
           className="input"
+          rows={2}
           value={form.programa_academico}
           onChange={(e) => actualizarCampo("programa_academico", e.target.value)}
         />
@@ -284,7 +285,7 @@ export default function FormularioTalento({
         </div>
       </Campo>
 
-      <Campo label="¿Tienes algún requerimiento especial para tu presentación? (opcional)">
+      <Campo label="¿Tienes algún requerimiento especial para tu presentación?">
         <textarea
           className="input"
           rows={3}
