@@ -30,7 +30,7 @@ export async function GET() {
     { header: "Nombre completo", key: "nombre_completo" },
     { header: "Correo", key: "correo" },
     { header: "Celular", key: "celular" },
-    { header: "Programa", key: "programa_academico" },
+    { header: "Vínculo con la UIS", key: "programa_academico" },
     { header: "Expresión artística", key: "expresion" },
     { header: "Nombre artístico", key: "nombre_artistico" },
     { header: "Propuesta", key: "descripcion_propuesta" },
