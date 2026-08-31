@@ -30,14 +30,21 @@ export default function FormularioEditarInscrito({
     programa_academico: inscrito.programa_academico,
     talla_id: inscrito.talla_id,
     actividades_ids: inscrito.actividades_ids,
+    actividad_otro: inscrito.actividad_otro ?? "",
     comentarios: inscrito.comentarios ?? "",
     tipo_egresado: inscrito.tipo_egresado,
   });
+
   const [acompanantes, setAcompanantes] = useState<Acompanante[]>(inscrito.acompanantes);
   const [guardando, setGuardando] = useState(false);
   const [eliminando, setEliminando] = useState(false);
   const [confirmarEliminar, setConfirmarEliminar] = useState(false);
   const [mensaje, setMensaje] = useState<{ tipo: "ok" | "error"; texto: string } | null>(null);
+
+  const idActividadOtro = actividades.find((a) => a.nombre === "Otro")?.id ?? null;
+  const actividadOtroSeleccionada = idActividadOtro
+    ? form.actividades_ids.includes(idActividadOtro)
+    : false;
 
   function actualizarCampo<K extends keyof typeof form>(campo: K, valor: (typeof form)[K]) {
     setForm((prev) => ({ ...prev, [campo]: valor }));
@@ -65,6 +72,7 @@ export default function FormularioEditarInscrito({
 
     const resp = await actualizarInscritoAction(inscrito.id, {
       ...form,
+      actividad_otro: form.actividad_otro || null,
       comentarios: form.comentarios || null,
       acompanantes,
     });
@@ -175,7 +183,7 @@ export default function FormularioEditarInscrito({
               ))}
             </select>
           </label>
-                    <label className="block md:col-span-2">
+          <label className="block md:col-span-2">
             <span className="block text-sm font-medium text-gray-700 mb-1">Actividades</span>
             <div className="flex flex-wrap gap-2">
               {actividades.map((a) => {
@@ -203,6 +211,15 @@ export default function FormularioEditarInscrito({
                 );
               })}
             </div>
+
+            {actividadOtroSeleccionada && (
+              <input
+                className="input mt-2"
+                placeholder="Actividad especificada por el inscrito"
+                value={form.actividad_otro}
+                onChange={(e) => actualizarCampo("actividad_otro", e.target.value)}
+              />
+            )}
           </label>
           <label className="block">
             <span className="block text-sm font-medium text-gray-700 mb-1">Tipo</span>

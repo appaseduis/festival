@@ -31,6 +31,7 @@ type FormState = {
   programa_academico: string;
   talla_id: string;
   actividades_ids: string[];
+  actividad_otro: string;
   comentarios: string;
   tipo_egresado: TipoEgresado | "";
   tiene_acompanantes: boolean | null;
@@ -47,6 +48,7 @@ const ESTADO_INICIAL: FormState = {
   programa_academico: "",
   talla_id: "",
   actividades_ids: [],
+  actividad_otro: "",
   comentarios: "",
   tipo_egresado: "",
   tiene_acompanantes: null,
@@ -106,11 +108,20 @@ export default function WizardInscripcion({ config, tallas, actividades }: Props
     return precioEgresado + subtotalAcompanantes;
   }, [config, form.acompanantes.length, precioEgresado]);
 
+  const idActividadOtro = useMemo(
+    () => actividades.find((a) => a.nombre === "Otro")?.id ?? null,
+    [actividades]
+  );
+
+  const actividadOtroSeleccionada = idActividadOtro
+    ? form.actividades_ids.includes(idActividadOtro)
+    : false;
+
   function actualizarCampo<K extends keyof FormState>(campo: K, valor: FormState[K]) {
     setForm((prev) => ({ ...prev, [campo]: valor }));
   }
 
-    function alternarActividad(id: string) {
+  function alternarActividad(id: string) {
     setForm((prev) => {
       const yaSeleccionada = prev.actividades_ids.includes(id);
       return {
@@ -156,6 +167,9 @@ export default function WizardInscripcion({ config, tallas, actividades }: Props
       if (!form.talla_id) return "Selecciona tu talla";
       if (!form.tipo_egresado) return "Indica si eres socio o no socio";
     }
+    if (paso === 2 && actividadOtroSeleccionada && !form.actividad_otro.trim()) {
+      return "Especifica qué otra actividad te gustaría";
+    }
     if (paso === 3 && form.tiene_acompanantes === null) {
       return "Indica si vienes con acompañantes";
     }
@@ -198,6 +212,7 @@ export default function WizardInscripcion({ config, tallas, actividades }: Props
       programa_academico: form.programa_academico.trim(),
       talla_id: form.talla_id,
       actividades_ids: form.actividades_ids,
+      actividad_otro: actividadOtroSeleccionada ? form.actividad_otro.trim() || null : null,
       comentarios: form.comentarios.trim() || null,
       tipo_egresado: form.tipo_egresado as TipoEgresado,
       acompanantes: form.tiene_acompanantes ? form.acompanantes : [],
@@ -253,8 +268,8 @@ export default function WizardInscripcion({ config, tallas, actividades }: Props
   const linkWhatsApp = `https://wa.me/${config.whatsapp_numero}?text=${mensajeWhatsApp()}`;
 
   return (
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-200 border-t-4 border-t-uis-green p-5 sm:p-6 md:p-8">
-            <div className="mb-8">
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 border-t-4 border-t-uis-green p-5 sm:p-6 md:p-8">
+      <div className="mb-8">
         {/* Versión móvil: solo el paso actual */}
         <div className="flex sm:hidden items-center justify-between text-xs text-gray-500 mb-2">
           <span className="font-semibold text-navy">
@@ -347,7 +362,7 @@ export default function WizardInscripcion({ config, tallas, actividades }: Props
               onChange={(e) => actualizarCampo("programa_academico", e.target.value)}
             />
           </Campo>
-                    <label className="block">
+          <label className="block">
             <span className="flex items-center justify-between mb-1">
               <span className="text-sm font-medium text-gray-700">Talla de camiseta</span>
               <button
@@ -372,6 +387,12 @@ export default function WizardInscripcion({ config, tallas, actividades }: Props
             </select>
           </label>
           <Campo label="¿Eres socio o no socio de ASEDUIS?">
+            <p className="text-xs text-gray-500 mb-3">
+              La condición de socio se valida manualmente por el equipo organizador.
+              Si seleccionas "Socio" sin estar registrado como tal, se te contactará
+              por WhatsApp para completar el valor adicional.
+            </p>
+
             <div className="flex gap-3">
               <button
                 type="button"
@@ -392,17 +413,37 @@ export default function WizardInscripcion({ config, tallas, actividades }: Props
                 No socio ({formatoCOP(config.precio_egresado_no_socio)})
               </button>
             </div>
-            <p className="text-xs text-gray-500 mt-2">
-              La condición de socio se valida manualmente por el equipo organizador.
-              Si seleccionas "Socio" sin estar registrado como tal, se te contactará
-              por WhatsApp para completar el valor adicional.
-            </p>
+
+            <a
+              href="https://www.aseduis.com/store/product-category/membresia/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex justify-center items-center gap-1.5 mt-5 pt-1 w-full text-sm font-medium text-uis-green hover:text-navy transition-colors text-center"
+            >
+              ¿Aún no eres socio? Afíliate aquí
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className="w-4 h-4"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M4.25 5.5a.75.75 0 0 0-.75.75v9c0 .414.336.75.75.75h9a.75.75 0 0 0 .75-.75v-4a.75.75 0 0 1 1.5 0v4A2.25 2.25 0 0 1 13.25 17.5h-9A2.25 2.25 0 0 1 2 15.25v-9A2.25 2.25 0 0 1 4.25 4h4a.75.75 0 0 1 0 1.5h-4Z"
+                  clipRule="evenodd"
+                />
+                <path
+                  fillRule="evenodd"
+                  d="M6.194 12.753a.75.75 0 0 0 1.06.053L16.5 4.44v2.81a.75.75 0 0 0 1.5 0v-4.5a.75.75 0 0 0-.75-.75h-4.5a.75.75 0 0 0 0 1.5h2.553l-9.056 8.194a.75.75 0 0 0-.053 1.06Z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </a>
           </Campo>
         </div>
       )}
 
       {/* PASO 2: Participación */}
-            {/* PASO 2: Participación */}
       {paso === 2 && (
         <div className="space-y-4">
           <Campo label="¿En qué deportes y/o actividades te gustaría participar? (puedes elegir varias)">
@@ -429,6 +470,17 @@ export default function WizardInscripcion({ config, tallas, actividades }: Props
               <p className="text-sm text-gray-400">
                 Aún no hay actividades configuradas.
               </p>
+            )}
+
+            {actividadOtroSeleccionada && (
+              <div className="mt-3">
+                <input
+                  className="input"
+                  placeholder="Escribe qué otro deporte o actividad te gustaría"
+                  value={form.actividad_otro}
+                  onChange={(e) => actualizarCampo("actividad_otro", e.target.value)}
+                />
+              </div>
             )}
           </Campo>
           <Campo label="Comentarios adicionales">

@@ -32,6 +32,7 @@ export async function crearInscripcionAction(
     p_programa_academico: data.programa_academico,
     p_talla_id: data.talla_id,
     p_actividades_ids: data.actividades_ids,
+    p_actividad_otro: data.actividad_otro,
     p_comentarios: data.comentarios,
     p_tipo_egresado: data.tipo_egresado,
     p_acompanantes: data.acompanantes,

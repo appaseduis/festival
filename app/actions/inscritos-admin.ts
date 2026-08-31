@@ -59,7 +59,8 @@ export type InscritoDetalle = {
   genero: "M" | "F";
   programa_academico: string;
   talla_id: string;
-    actividades_ids: string[];
+  actividades_ids: string[];
+  actividad_otro: string | null;
   comentarios: string | null;
   tipo_egresado: "socio" | "no_socio";
   estado_pago: string;
@@ -77,7 +78,7 @@ export async function obtenerInscritoDetalleAction(
   const { data: inscrito, error } = await supabase
     .from("inscritos")
     .select(
-      "id, nombres_completos, documento, correo, celular, genero, programa_academico, talla_id, comentarios, tipo_egresado, estado_pago, estado_inscripcion, total"
+      "id, nombres_completos, documento, correo, celular, genero, programa_academico, talla_id, actividad_otro, comentarios, tipo_egresado, estado_pago, estado_inscripcion, total"
     )
     .eq("id", id)
     .single();
@@ -110,6 +111,7 @@ export type DatosEdicionInscrito = {
   programa_academico: string;
   talla_id: string;
   actividades_ids: string[];
+  actividad_otro: string | null;
   comentarios: string | null;
   tipo_egresado: "socio" | "no_socio";
   acompanantes: { id?: string; nombre: string; documento: string; edad: number }[];
@@ -160,6 +162,7 @@ export async function actualizarInscritoAction(
       genero: datos.genero,
       programa_academico: datos.programa_academico,
       talla_id: datos.talla_id,
+      actividad_otro: datos.actividad_otro,
       comentarios: datos.comentarios,
       tipo_egresado: datos.tipo_egresado,
       cantidad_acompanantes: datos.acompanantes.length,

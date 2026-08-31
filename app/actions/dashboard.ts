@@ -13,6 +13,7 @@ export type EstadisticasDashboard = {
   kitsEntregados: number;
   fichosNecesarios: number;
   fichosEntregados: number;
+  totalPropuestasTalento: number;
 };
 
 export async function obtenerEstadisticasAction(): Promise<EstadisticasDashboard> {
@@ -24,6 +25,10 @@ export async function obtenerEstadisticasAction(): Promise<EstadisticasDashboard
     .select(
       "cantidad_acompanantes, estado_inscripcion, estado_pago, total, kit_entregado, cantidad_fichos, fichos_entregados"
     );
+
+  const { count: totalPropuestasTalento } = await supabase
+    .from("talentos_culturales")
+    .select("*", { count: "exact", head: true });
 
   if (error || !inscritos) {
     console.error("Error obteniendo estadísticas:", error);
@@ -37,6 +42,7 @@ export async function obtenerEstadisticasAction(): Promise<EstadisticasDashboard
       kitsEntregados: 0,
       fichosNecesarios: 0,
       fichosEntregados: 0,
+      totalPropuestasTalento: totalPropuestasTalento ?? 0,
     };
   }
 
@@ -55,5 +61,6 @@ export async function obtenerEstadisticasAction(): Promise<EstadisticasDashboard
     fichosEntregados: confirmados
       .filter((i) => i.fichos_entregados)
       .reduce((sum, i) => sum + i.cantidad_fichos, 0),
+    totalPropuestasTalento: totalPropuestasTalento ?? 0,
   };
 }

@@ -76,6 +76,7 @@ export interface CrearInscripcionInput {
   comentarios: string | null;
   tipo_egresado: TipoEgresado;
   acompanantes: AcompananteInput[];
+  actividad_otro: string | null;
 }
 
 export type CategoriaEmprendimiento =
@@ -137,4 +138,86 @@ export interface CrearEmprendimientoInput {
   categoria_otro: string | null;
   tipo_egresado: TipoEgresado;
   necesita_electricidad: boolean;
+}
+
+export type ExpresionArtistica =
+  | "Música – Solista"
+  | "Música – Grupo o agrupación"
+  | "Banda"
+  | "Coro"
+  | "Danza / baile"
+  | "Teatro / actuación"
+  | "Poesía / literatura"
+  | "Pintura / artes plásticas"
+  | "Circo / artes escénicas"
+  | "Otra";
+
+export const EXPRESIONES_ARTISTICAS: ExpresionArtistica[] = [
+  "Música – Solista",
+  "Música – Grupo o agrupación",
+  "Banda",
+  "Coro",
+  "Danza / baile",
+  "Teatro / actuación",
+  "Poesía / literatura",
+  "Pintura / artes plásticas",
+  "Circo / artes escénicas",
+  "Otra",
+];
+
+export type DuracionPresentacion = "15–30 minutos" | "30–45 minutos" | "45–60 minutos";
+
+export const DURACIONES_PRESENTACION: DuracionPresentacion[] = [
+  "15–30 minutos",
+  "30–45 minutos",
+  "45–60 minutos",
+];
+
+export const DIAS_DISPONIBLES = [
+  "Viernes 9 de octubre – Jornada Tarde",
+  "Sábado 10 de octubre – Jornada Mañana",
+  "Sábado 10 de octubre – Jornada Tarde",
+  "Domingo 11 de octubre – Jornada Mañana",
+];
+
+export type EstadoTalento = "preinscrito" | "aceptado" | "rechazado";
+
+export interface TalentoCultural {
+  id: string;
+  nombre_completo: string;
+  correo: string;
+  celular: string;
+  programa_academico: string;
+  expresion_artistica: ExpresionArtistica;
+  expresion_otra: string | null;
+  nombre_artistico: string | null;
+  descripcion_propuesta: string;
+  cantidad_participantes: number;
+  duracion_presentacion: DuracionPresentacion;
+  enlace_portafolio: string | null;
+  dias_disponibles: string[];
+  requerimientos_especiales: string | null;
+  acepta_terminos: boolean;
+  autoriza_imagen: boolean;
+  estado: EstadoTalento;
+  notas_admin: string | null;
+  created_at: string;
+}
+
+export interface CrearTalentoInput {
+  nombre_completo: string;
+  correo: string;
+  celular: string;
+  programa_academico: string;
+  expresion_artistica: ExpresionArtistica;
+  expresion_otra: string | null;
+  nombre_artistico: string | null;
+  descripcion_propuesta: string;
+  cantidad_participantes: number;
+  duracion_presentacion: DuracionPresentacion;
+  enlace_portafolio: string | null;
+  dias_disponibles: string[];
+  requerimientos_especiales: string | null;
+  acepta_terminos: boolean;
+  autoriza_imagen: boolean;
 }

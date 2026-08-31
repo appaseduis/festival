@@ -30,6 +30,7 @@ export const inscripcionSchema = z.object({
   programa_academico: z.string().trim().min(2, "Ingresa tu programa académico"),
   talla_id: z.string().uuid("Selecciona una talla"),
   actividades_ids: z.array(z.string().uuid()),
+  actividad_otro: z.string().trim().max(100).nullable(),
   comentarios: z.string().trim().max(500).nullable(),
   tipo_egresado: z.enum(["socio", "no_socio"], {
     message: "Selecciona si eres socio o no socio",
