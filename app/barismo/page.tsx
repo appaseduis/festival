@@ -44,7 +44,6 @@ export default async function PaginaBarismo() {
           <p>☕ El café oficial en grano será suministrado en su totalidad por Alumni Café.</p>
           <p className="text-xs bg-amber-50 border border-amber-200 text-amber-900 rounded-lg p-3">
             ⚠️ Cupos limitados a 18 participantes.{" "}
-            <strong>{cuposDisponibles} cupo(s) disponible(s)</strong> en este momento.
           </p>
           <p>
             💰 Valor de la inscripción: <strong>$50.000 COP</strong> (incluye café oficial de
