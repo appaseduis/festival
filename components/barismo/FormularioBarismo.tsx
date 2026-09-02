@@ -121,9 +121,9 @@ export default function FormularioBarismo({ cuposDisponibles }: { cuposDisponibl
         <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
           Para confirmar tu estación, completa el pago y envía tu inscripción por WhatsApp.
         </div>
-
         
-          href={`https://wa.me/573242606004?text=${mensajeWhatsApp}`}
+        <a
+          href={`https://wa.me/573242606004?text=${encodeURIComponent(mensajeWhatsApp)}`}
           target="_blank"
           rel="noopener noreferrer"
           className="block text-center bg-green-600 hover:bg-green-700 text-white font-medium py-3 rounded-lg"
