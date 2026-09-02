@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { crearInscripcionBarismoAction } from "@/app/actions/barismo";
+import { obtenerInfoBancolombiaAction } from "@/app/actions/pago";
 import { EXPERIENCIAS_BARISMO } from "@/types/database";
 import type { ExperienciaBarismo } from "@/types/database";
 import BotonPagoBold from "@/components/inscripcion/BotonPagoBold";
@@ -39,15 +40,39 @@ function formatoCOP(valor: number) {
   }).format(valor);
 }
 
+const LLAVE_BANCOLOMBIA = "0090310223";
+
 export default function FormularioBarismo({ cuposDisponibles }: { cuposDisponibles: number }) {
   const [form, setForm] = useState<FormState>(ESTADO_INICIAL);
   const [error, setError] = useState<string | null>(null);
   const [enviando, setEnviando] = useState(false);
   const [resultado, setResultado] = useState<{ id: string; total: number } | null>(null);
   const [metodoElegido, setMetodoElegido] = useState<"bold" | "bancolombia" | null>(null);
+  const [infoBancolombia, setInfoBancolombia] = useState<{ qr_url: string | null; datos: string | null } | null>(null);
+  const [mostrarQRGrande, setMostrarQRGrande] = useState(false);
+  const [llaveCopiada, setLlaveCopiada] = useState(false);
 
   function actualizarCampo<K extends keyof FormState>(campo: K, valor: FormState[K]) {
     setForm((prev) => ({ ...prev, [campo]: valor }));
+  }
+
+  async function copiarLlave() {
+    try {
+      await navigator.clipboard.writeText(LLAVE_BANCOLOMBIA);
+      setLlaveCopiada(true);
+      setTimeout(() => setLlaveCopiada(false), 2000);
+    } catch {
+      // Si el navegador bloquea el portapapeles, no hacemos nada más
+    }
+  }
+
+  async function elegirMetodoPago(metodo: "bold" | "bancolombia") {
+    setMetodoElegido(metodo);
+
+    if (metodo === "bancolombia") {
+      const info = await obtenerInfoBancolombiaAction();
+      setInfoBancolombia(info);
+    }
   }
 
   function validar(): string | null {
@@ -101,7 +126,7 @@ export default function FormularioBarismo({ cuposDisponibles }: { cuposDisponibl
       <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 md:p-8 text-center">
         <p className="text-lg font-semibold text-navy mb-2">Cupos agotados</p>
         <p className="text-sm text-gray-600">
-          Lo sentimos, los 18 cupos de la competencia ya están completos.
+          Lo sentimos, los cupos de la competencia ya están completos.
         </p>
       </div>
     );
@@ -121,9 +146,9 @@ export default function FormularioBarismo({ cuposDisponibles }: { cuposDisponibl
         <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
           Para confirmar tu estación, completa el pago y envía tu inscripción por WhatsApp.
         </div>
-        
+
         <a
-          href={`https://wa.me/573242606004?text=${encodeURIComponent(mensajeWhatsApp)}`}
+          href={`https://wa.me/573242606004?text=${mensajeWhatsApp}`}
           target="_blank"
           rel="noopener noreferrer"
           className="block text-center bg-green-600 hover:bg-green-700 text-white font-medium py-3 rounded-lg"
@@ -135,14 +160,14 @@ export default function FormularioBarismo({ cuposDisponibles }: { cuposDisponibl
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <button
               type="button"
-              onClick={() => setMetodoElegido("bold")}
+              onClick={() => elegirMetodoPago("bold")}
               className="py-3 rounded-lg border-2 border-navy text-navy font-medium hover:bg-navy hover:text-white transition-colors"
             >
               Pagar con Bold
             </button>
             <button
               type="button"
-              onClick={() => setMetodoElegido("bancolombia")}
+              onClick={() => elegirMetodoPago("bancolombia")}
               className="py-3 rounded-lg border-2 border-navy text-navy font-medium hover:bg-navy hover:text-white transition-colors"
             >
               Pagar mediante Bancolombia
@@ -158,9 +183,78 @@ export default function FormularioBarismo({ cuposDisponibles }: { cuposDisponibl
         )}
 
         {metodoElegido === "bancolombia" && (
-          <div className="rounded-xl border border-gray-200 p-4 text-sm text-gray-700 space-y-2">
+          <div className="rounded-xl border border-gray-200 p-4 text-sm text-gray-700 space-y-3">
             <p className="font-medium">Pago mediante Bancolombia</p>
-            <p>Realiza la transferencia y envía el comprobante por WhatsApp al número de ASEDUIS.</p>
+
+            {infoBancolombia?.qr_url ? (
+              <div className="flex flex-col items-center gap-3">
+                <img
+                  src={infoBancolombia.qr_url}
+                  alt="QR de pago Bancolombia"
+                  className="w-32 h-32 object-contain"
+                />
+                <button
+                  type="button"
+                  onClick={() => setMostrarQRGrande(true)}
+                  className="px-4 py-2 rounded-lg border border-gray-300 text-sm font-medium"
+                >
+                  Mirar QR
+                </button>
+              </div>
+            ) : (
+              <p className="text-gray-500">
+                El QR de pago aún no ha sido configurado por el administrador.
+              </p>
+            )}
+
+            <div className="flex items-center justify-between gap-3 rounded-lg bg-gray-50 border border-gray-200 px-3 py-2">
+              <div>
+                <p className="text-xs text-gray-500">Llave Bancolombia</p>
+                <p className="font-mono font-medium">{LLAVE_BANCOLOMBIA}</p>
+              </div>
+              <button
+                type="button"
+                onClick={copiarLlave}
+                className="px-3 py-1.5 rounded-lg bg-navy text-white text-xs font-medium whitespace-nowrap"
+              >
+                {llaveCopiada ? "¡Copiada!" : "Copiar llave"}
+              </button>
+            </div>
+
+            {infoBancolombia?.datos && (
+              <p className="whitespace-pre-line text-gray-600">{infoBancolombia.datos}</p>
+            )}
+
+            <p className="text-amber-700">
+              Después de transferir, envía el comprobante por WhatsApp al número de ASEDUIS
+              usando el botón de arriba.
+            </p>
+          </div>
+        )}
+
+        {mostrarQRGrande && infoBancolombia?.qr_url && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4"
+            onClick={() => setMostrarQRGrande(false)}
+          >
+            <div
+              className="bg-white rounded-2xl p-6 max-w-sm w-full text-center space-y-4"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <p className="font-semibold text-navy">QR de pago Bancolombia</p>
+              <img
+                src={infoBancolombia.qr_url}
+                alt="QR de pago Bancolombia ampliado"
+                className="w-full h-auto"
+              />
+              <button
+                type="button"
+                onClick={() => setMostrarQRGrande(false)}
+                className="px-5 py-2 rounded-lg bg-navy text-white text-sm font-medium"
+              >
+                Cerrar
+              </button>
+            </div>
           </div>
         )}
 

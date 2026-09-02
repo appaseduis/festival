@@ -52,7 +52,7 @@ export default async function PaginaDashboard() {
       titulo: "Competencia de Barismo",
       color: "#7AB800",
       tarjetas: [
-        { label: "Cupos ocupados (de 2)", valor: stats.cuposBarismoOcupados },
+        { label: "Cupos ocupados (de 18)", valor: stats.cuposBarismoOcupados },
         { label: "Recaudado", valor: formatoCOP(stats.recaudadoBarismo) },
       ],
     },
