@@ -9,6 +9,7 @@ const EXPORTACIONES = [
   { href: "/api/exportar/entregas", label: "Control de entregas" },
   { href: "/api/exportar/emprendimientos", label: "Emprendimientos" },
   { href: "/api/exportar/talento", label: "Talento Cultural" },
+  { href: "/api/exportar/barismo", label: "Barismo" },
 ];
 
 export default function PanelExportaciones() {
