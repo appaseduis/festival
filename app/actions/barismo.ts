@@ -55,7 +55,7 @@ export async function obtenerCuposBarismoAction(): Promise<{ ocupados: number; t
     .select("*", { count: "exact", head: true })
     .neq("estado_pago", "pago_rechazado");
 
-  return { ocupados: count ?? 0, total: 18 };
+  return { ocupados: count ?? 0, total: 2 };
 }
 
 export async function listarBarismoAction(

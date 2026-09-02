@@ -60,7 +60,7 @@ export default function GestionBarismo({
     <div>
       <div className="bg-white rounded-xl border border-gray-200 p-4 mb-4">
         <p className="text-sm text-gray-500">
-          Cupos ocupados: <span className="font-semibold text-navy">{activos} / 18</span>
+          Cupos ocupados: <span className="font-semibold text-navy">{activos} / 2</span>
         </p>
       </div>
 
