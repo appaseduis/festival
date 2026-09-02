@@ -11,9 +11,11 @@ const ENLACES = [
   { href: "/admin/pagos", label: "Pagos" },
   { href: "/admin/emprendimientos", label: "Emprendimientos" },
   { href: "/admin/talento", label: "Talento Cultural" },
+  { href: "/admin/barismo", label: "Competencia Barismo" },
   { href: "/admin/control", label: "Control (QR/Cédula)" },
   { href: "/admin/reportes", label: "Reportes" },
   { href: "/admin/configuracion", label: "Configuración" },
+
   
 ];
 

@@ -70,15 +70,18 @@ export type DatosBotonBold = {
  * SHA256({orderId}{amount}{currency}{llaveSecreta})
  */
 export async function generarDatosBoldAction(
-  inscripcionId: string,
-  amount: number
+  entidadId: string,
+  amount: number,
+  prefix?: string
 ): Promise<DatosBotonBold> {
   const secretKey = process.env.BOLD_SECRET_KEY!;
   const apiKey = process.env.NEXT_PUBLIC_BOLD_API_KEY!;
   const currency = "COP" as const;
 
-  // Usamos el ID de la inscripción como order-id (único por venta).
-  const orderId = inscripcionId;
+  // El order-id identifica de qué módulo viene el pago (inscripción de
+  // egresado, barismo, etc.) para que el webhook sepa a qué tabla y RPC
+  // dirigir la confirmación.
+  const orderId = prefix ? `${prefix}_${entidadId}` : entidadId;
 
   const cadena = `${orderId}${amount}${currency}${secretKey}`;
   const integritySignature = crypto.createHash("sha256").update(cadena).digest("hex");

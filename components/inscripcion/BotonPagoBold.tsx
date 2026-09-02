@@ -6,9 +6,11 @@ import { generarDatosBoldAction } from "@/app/actions/pago";
 export default function BotonPagoBold({
   inscripcionId,
   amount,
+  prefix,
 }: {
   inscripcionId: string;
   amount: number;
+  prefix?: string;
 }) {
   const contenedorRef = useRef<HTMLDivElement>(null);
   const [error, setError] = useState<string | null>(null);
@@ -19,7 +21,7 @@ export default function BotonPagoBold({
 
     async function cargarBoton() {
       try {
-        const datos = await generarDatosBoldAction(inscripcionId, amount);
+      const datos = await generarDatosBoldAction(inscripcionId, amount, prefix);
 
         if (cancelado || !contenedorRef.current) return;
 

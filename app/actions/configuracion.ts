@@ -15,6 +15,7 @@ export type ConfiguracionCompleta = {
   bancolombia_qr_url: string | null;
   bancolombia_datos: string | null;
   bold_activo: boolean;
+  precio_barismo: number;
 };
 
 export async function obtenerConfiguracionAction(): Promise<ConfiguracionCompleta | null> {

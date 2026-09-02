@@ -35,12 +35,25 @@ export default async function PaginaDashboard() {
         { label: "Kits entregados", valor: stats.kitsEntregados },
       ],
     },
-    {
+        {
       titulo: "Fichos de almuerzo",
       color: "#52B4D8",
       tarjetas: [
         { label: "Fichos necesarios", valor: stats.fichosNecesarios },
         { label: "Fichos entregados", valor: stats.fichosEntregados },
+      ],
+    },
+    {
+      titulo: "Talento Cultural",
+      color: "#52B4D8",
+      tarjetas: [{ label: "Propuestas recibidas", valor: stats.totalPropuestasTalento }],
+    },
+    {
+      titulo: "Competencia de Barismo",
+      color: "#7AB800",
+      tarjetas: [
+        { label: "Cupos ocupados (de 18)", valor: stats.cuposBarismoOcupados },
+        { label: "Recaudado", valor: formatoCOP(stats.recaudadoBarismo) },
       ],
     },
   ];

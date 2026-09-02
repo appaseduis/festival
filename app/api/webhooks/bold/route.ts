@@ -45,9 +45,9 @@ export async function POST(req: NextRequest) {
   }
 
   // El order-id que enviamos al crear el botón queda en metadata.reference
-  const inscripcionId = payload.data?.metadata?.reference;
+  const reference = payload.data?.metadata?.reference;
 
-  if (!inscripcionId) {
+  if (!reference) {
     // Confirmamos 200 igual, para que Bold no reintente por algo que no podemos procesar
     return NextResponse.json({ ok: true, ignorado: true });
   }
@@ -61,19 +61,27 @@ export async function POST(req: NextRequest) {
 
   const supabase = createAdminClient();
 
-  // Idempotencia: si ya está en el estado final, no lo reprocesamos (evita duplicados de reintentos de Bold)
+  // El prefijo del order-id nos dice a qué módulo pertenece el pago.
+  const esBarismo = reference.startsWith("bar_");
+  const id = esBarismo ? reference.replace("bar_", "") : reference;
+
+  const tabla = esBarismo ? "competencia_barismo" : "inscritos";
+  const rpc = esBarismo ? "confirmar_pago_barismo" : "confirmar_pago";
+  const paramId = esBarismo ? "p_id" : "p_inscrito_id";
+
+  // Idempotencia: si ya está en el estado final, no lo reprocesamos
   const { data: actual } = await supabase
-    .from("inscritos")
+    .from(tabla)
     .select("estado_pago")
-    .eq("id", inscripcionId)
+    .eq("id", id)
     .maybeSingle();
 
   if (actual?.estado_pago === "pago_confirmado" || actual?.estado_pago === "pago_rechazado") {
     return NextResponse.json({ ok: true, yaProcesado: true });
   }
 
-  const { error } = await supabase.rpc("confirmar_pago", {
-    p_inscrito_id: inscripcionId,
+  const { error } = await supabase.rpc(rpc, {
+    [paramId]: id,
     p_nuevo_estado: nuevoEstado,
     p_confirmado_por: "bold_webhook",
   });

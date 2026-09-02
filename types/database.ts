@@ -19,6 +19,7 @@ export interface ConfiguracionPublica {
   precio_acompanante: number;
   whatsapp_numero: string;
   bold_activo: boolean;
+  precio_barismo: number;
 }
 
 export interface Talla {
@@ -220,4 +221,41 @@ export interface CrearTalentoInput {
   requerimientos_especiales: string | null;
   acepta_terminos: boolean;
   autoriza_imagen: boolean;
+}
+
+export type ExperienciaBarismo = "Menos de 1 año" | "1-3 años" | "Más de 3 años";
+
+export const EXPERIENCIAS_BARISMO: ExperienciaBarismo[] = [
+  "Menos de 1 año",
+  "1-3 años",
+  "Más de 3 años",
+];
+
+export interface CompetenciaBarismo {
+  id: string;
+  nombre_completo: string;
+  whatsapp: string;
+  correo: string;
+  documento: string;
+  representa_marca: boolean;
+  marca_nombre: string | null;
+  experiencia: ExperienciaBarismo;
+  metodo_fase1: string;
+  acepta_reglamento: boolean;
+  total: number;
+  metodo_pago: "bold" | "bancolombia" | null;
+  estado_pago: EstadoPago;
+  created_at: string;
+}
+
+export interface CrearBarismoInput {
+  nombre_completo: string;
+  whatsapp: string;
+  correo: string;
+  documento: string;
+  representa_marca: boolean;
+  marca_nombre: string | null;
+  experiencia: ExperienciaBarismo;
+  metodo_fase1: string;
+  acepta_reglamento: boolean;
 }

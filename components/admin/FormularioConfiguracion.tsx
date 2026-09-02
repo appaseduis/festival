@@ -74,6 +74,15 @@ export default function FormularioConfiguracion({
               onChange={(e) => actualizarCampo("precio_acompanante", Number(e.target.value))}
             />
           </label>
+                    <label className="block">
+            <span className="block text-sm font-medium text-gray-700 mb-1">Barismo</span>
+            <input
+              type="number"
+              className="input"
+              value={config.precio_barismo}
+              onChange={(e) => actualizarCampo("precio_barismo", Number(e.target.value))}
+            />
+          </label>
         </div>
       </div>
 
