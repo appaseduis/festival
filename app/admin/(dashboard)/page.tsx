@@ -103,6 +103,12 @@ export default async function PaginaDashboard() {
       tarjetas: [{ label: "Propuestas recibidas", valor: stats.totalPropuestasTalento }],
     },
     {
+      titulo: "Emprendimientos",
+      icono: "🛍️",
+      color: "#FF6B6B",
+      tarjetas: [{ label: "Propuestas recibidas", valor: stats.totalEmprendimientos }],
+    },
+    {
       titulo: "Competencia de Barismo",
       icono: "☕",
       color: "#2BB673",

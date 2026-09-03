@@ -16,6 +16,7 @@ export type EstadisticasDashboard = {
   totalPropuestasTalento: number;
   cuposBarismoOcupados: number;
   recaudadoBarismo: number;
+  totalEmprendimientos: number;
 };
 
 export async function obtenerEstadisticasAction(): Promise<EstadisticasDashboard> {
@@ -30,6 +31,10 @@ export async function obtenerEstadisticasAction(): Promise<EstadisticasDashboard
 
   const { count: totalPropuestasTalento } = await supabase
     .from("talentos_culturales")
+    .select("*", { count: "exact", head: true });
+
+  const { count: totalEmprendimientos } = await supabase
+    .from("emprendimientos")
     .select("*", { count: "exact", head: true });
 
     const { data: barismo } = await supabase
@@ -52,6 +57,7 @@ export async function obtenerEstadisticasAction(): Promise<EstadisticasDashboard
       fichosNecesarios: 0,
       fichosEntregados: 0,
       totalPropuestasTalento: totalPropuestasTalento ?? 0,
+      totalEmprendimientos: totalEmprendimientos ?? 0,
       cuposBarismoOcupados: barismoActivos.length,
       recaudadoBarismo: barismoConfirmados.reduce((sum, b) => sum + Number(b.total), 0),
     };
@@ -73,6 +79,7 @@ export async function obtenerEstadisticasAction(): Promise<EstadisticasDashboard
       .filter((i) => i.fichos_entregados)
       .reduce((sum, i) => sum + i.cantidad_fichos, 0),
     totalPropuestasTalento: totalPropuestasTalento ?? 0,
+    totalEmprendimientos: totalEmprendimientos ?? 0,
     cuposBarismoOcupados: barismoActivos.length,
     recaudadoBarismo: barismoConfirmados.reduce((sum, b) => sum + Number(b.total), 0),
   };
