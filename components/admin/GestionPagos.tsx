@@ -160,7 +160,6 @@ export default function GestionPagos({
                         i.estado_pago === "comprobante_en_revision") && (
                         <BotonMensajePago
                           nombre={i.nombres_completos}
-                          celular={i.celular}
                           total={i.total}
                           cantidadAcompanantes={i.cantidad_acompanantes}
                         />
