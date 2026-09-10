@@ -50,10 +50,17 @@ export async function GET() {
     { header: "Comentarios", key: "comentarios" },
     { header: "Acompañantes", key: "cantidad_acompanantes" },
     { header: "Total", key: "total" },
+    { header: "Método de pago", key: "metodo_pago" },
     { header: "Estado pago", key: "estado_pago" },
     { header: "Estado inscripción", key: "estado_inscripcion" },
     { header: "Fecha inscripción", key: "created_at" },
   ];
+
+  const ETIQUETA_METODO: Record<string, string> = {
+    bold: "Bold",
+    bancolombia: "Bancolombia",
+    efectivo: "Efectivo",
+  };
 
   for (const inscrito of data) {
     hoja.addRow({
@@ -70,6 +77,7 @@ export async function GET() {
       comentarios: inscrito.comentarios ?? "",
       cantidad_acompanantes: inscrito.cantidad_acompanantes,
       total: Number(inscrito.total),
+      metodo_pago: inscrito.metodo_pago ? ETIQUETA_METODO[inscrito.metodo_pago] ?? inscrito.metodo_pago : "",
       estado_pago: inscrito.estado_pago,
       estado_inscripcion: inscrito.estado_inscripcion,
       created_at: new Date(inscrito.created_at).toLocaleString("es-CO"),
