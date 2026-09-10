@@ -7,9 +7,9 @@ import { QRCodeSVG } from "qrcode.react";
 // expresados como PORCENTAJE del ancho/alto total de la imagen (no en
 // píxeles fijos), para que funcione sin importar la resolución exacta
 // del archivo. Si el QR queda desalineado, ajusta estos 3 valores.
-const QR_X_PERCENT = 0.365;
-const QR_Y_PERCENT = 0.37;
-const QR_SIZE_PERCENT = 0.32;
+const QR_X_PERCENT = 0.34;
+const QR_Y_PERCENT = 0.345;
+const QR_SIZE_PERCENT = 0.37;
 
 export default function ModalQR({
   nombre,
