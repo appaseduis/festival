@@ -16,7 +16,7 @@ export type InscripcionPago = {
 };
 
 export async function listarInscripcionesPagoAction(
-  filtro: "pendientes" | "todas"
+  filtro: "pendientes" | "confirmados" | "todas"
 ): Promise<InscripcionPago[]> {
   await requireAdmin();
   const supabase = createAdminClient();
@@ -31,6 +31,8 @@ export async function listarInscripcionesPagoAction(
 
   if (filtro === "pendientes") {
     query = query.in("estado_pago", ["pendiente_pago", "comprobante_en_revision"]);
+  } else if (filtro === "confirmados") {
+    query = query.eq("estado_pago", "pago_confirmado");
   }
 
   const { data, error } = await query;

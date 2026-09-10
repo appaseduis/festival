@@ -30,14 +30,14 @@ export default function GestionPagos({
 }: {
   inscripcionesIniciales: InscripcionPago[];
 }) {
-  const [filtro, setFiltro] = useState<"pendientes" | "todas">("pendientes");
+  const [filtro, setFiltro] = useState<"pendientes" | "confirmados" | "todas">("pendientes");
   const [inscripciones, setInscripciones] = useState(inscripcionesIniciales);
   const [pending, startTransition] = useTransition();
   const [procesando, setProcesando] = useState<string | null>(null);
   const [mensaje, setMensaje] = useState<string | null>(null);
     const [verDetalleId, setVerDetalleId] = useState<string | null>(null);
 
-  function cambiarFiltro(nuevo: "pendientes" | "todas") {
+    function cambiarFiltro(nuevo: "pendientes" | "confirmados" | "todas") {
     setFiltro(nuevo);
     startTransition(async () => {
       const resultado = await listarInscripcionesPagoAction(nuevo);
@@ -77,7 +77,7 @@ export default function GestionPagos({
 
   return (
     <div>
-      <div className="flex gap-2 mb-4">
+        <div className="flex gap-2 mb-4 flex-wrap">
         <button
           onClick={() => cambiarFiltro("pendientes")}
           className={`px-4 py-2 rounded-lg text-sm font-medium border ${
@@ -85,6 +85,14 @@ export default function GestionPagos({
           }`}
         >
           Pendientes
+        </button>
+        <button
+          onClick={() => cambiarFiltro("confirmados")}
+          className={`px-4 py-2 rounded-lg text-sm font-medium border ${
+            filtro === "confirmados" ? "bg-gray-900 text-white border-gray-900" : "border-gray-300"
+          }`}
+        >
+          Confirmados
         </button>
         <button
           onClick={() => cambiarFiltro("todas")}
