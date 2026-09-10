@@ -16,6 +16,8 @@ function formatoCOP(valor: number) {
   }).format(valor);
 }
 
+import ModalDetalleInscrito from "@/components/admin/ModalDetalleInscrito";
+
 const ETIQUETA_ESTADO: Record<string, { texto: string; color: string }> = {
   pendiente_pago: { texto: "Pendiente", color: "bg-gray-100 text-gray-700" },
   comprobante_en_revision: { texto: "En revisión", color: "bg-amber-100 text-amber-700" },
@@ -33,6 +35,7 @@ export default function GestionPagos({
   const [pending, startTransition] = useTransition();
   const [procesando, setProcesando] = useState<string | null>(null);
   const [mensaje, setMensaje] = useState<string | null>(null);
+    const [verDetalleId, setVerDetalleId] = useState<string | null>(null);
 
   function cambiarFiltro(nuevo: "pendientes" | "todas") {
     setFiltro(nuevo);
@@ -120,7 +123,20 @@ export default function GestionPagos({
 
                 return (
                   <tr key={i.id} className="border-b border-gray-100 hover:bg-gray-50">
-                    <td className="px-4 py-3 font-medium text-gray-900">{i.nombres_completos}</td>
+                                        <td className="px-4 py-3">
+                      <a
+                        href={`/admin/inscritos/${i.id}`}
+                        className="font-medium text-navy underline hover:text-[#00A3E0]"
+                      >
+                        {i.nombres_completos}
+                      </a>
+                      <button
+                        onClick={() => setVerDetalleId(i.id)}
+                        className="block text-xs text-gray-500 underline mt-0.5"
+                      >
+                        Ver detalle
+                      </button>
+                    </td>
                     <td className="px-4 py-3">{i.documento}</td>
                     <td className="px-4 py-3">{i.celular}</td>
                     <td className="px-4 py-3 capitalize">{i.metodo_pago ?? "—"}</td>
@@ -166,13 +182,17 @@ export default function GestionPagos({
             </tbody>
           </table>
 
-          {inscripciones.length === 0 && !pending && (
+                    {inscripciones.length === 0 && !pending && (
             <p className="text-center text-gray-500 py-8 text-sm">
               No hay inscripciones {filtro === "pendientes" ? "pendientes" : "registradas"}.
             </p>
           )}
         </div>
       </div>
+
+      {verDetalleId && (
+        <ModalDetalleInscrito inscritoId={verDetalleId} onCerrar={() => setVerDetalleId(null)} />
+      )}
     </div>
   );
 }

@@ -84,3 +84,41 @@ export async function marcarEnRevisionAction(
 
   return { ok: !error };
 }
+
+export type DetallePagoInscrito = {
+  id: string;
+  nombres_completos: string;
+  documento: string;
+  correo: string;
+  celular: string;
+  genero: string;
+  programa_academico: string;
+  tipo_egresado: string;
+  cantidad_acompanantes: number;
+  acompanantes: { nombre: string; documento: string; edad: number }[];
+  comentarios: string | null;
+};
+
+export async function obtenerDetallePagoAction(
+  id: string
+): Promise<DetallePagoInscrito | null> {
+  await requireAdmin();
+  const supabase = createAdminClient();
+
+  const { data: inscrito, error } = await supabase
+    .from("inscritos")
+    .select(
+      "id, nombres_completos, documento, correo, celular, genero, programa_academico, tipo_egresado, cantidad_acompanantes, comentarios"
+    )
+    .eq("id", id)
+    .single();
+
+  if (error || !inscrito) return null;
+
+  const { data: acompanantes } = await supabase
+    .from("acompanantes")
+    .select("nombre, documento, edad")
+    .eq("inscrito_id", id);
+
+  return { ...inscrito, acompanantes: acompanantes ?? [] };
+}
