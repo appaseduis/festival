@@ -41,11 +41,20 @@ export default function TablaInscritos({
   const [eliminandoId, setEliminandoId] = useState<string | null>(null);
   const [mensaje, setMensaje] = useState<string | null>(null);
   const [verQRDe, setVerQRDe] = useState<{ nombre: string; qrToken: string } | null>(null);
+  const [filtroPago, setFiltroPago] = useState<"todos" | "pendiente" | "confirmado">("todos");
 
-  function buscar(valor: string) {
+    function buscar(valor: string) {
     setBusqueda(valor);
     startTransition(async () => {
-      const resultado = await listarInscritosAction(valor);
+      const resultado = await listarInscritosAction(valor, filtroPago);
+      setInscritos(resultado);
+    });
+  }
+
+  function cambiarFiltroPago(nuevo: "todos" | "pendiente" | "confirmado") {
+    setFiltroPago(nuevo);
+    startTransition(async () => {
+      const resultado = await listarInscritosAction(busqueda, nuevo);
       setInscritos(resultado);
     });
   }
@@ -68,14 +77,43 @@ export default function TablaInscritos({
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-      <div className="p-4 border-b border-gray-200 flex items-center justify-between gap-4 flex-wrap">
-        <input
-          className="input max-w-sm"
-          placeholder="Buscar por nombre o documento..."
-          value={busqueda}
-          onChange={(e) => buscar(e.target.value)}
-        />
-        {mensaje && <span className="text-sm text-red-600">{mensaje}</span>}
+            <div className="p-4 border-b border-gray-200 space-y-3">
+        <div className="flex items-center justify-between gap-4 flex-wrap">
+          <input
+            className="input max-w-sm"
+            placeholder="Buscar por nombre o documento..."
+            value={busqueda}
+            onChange={(e) => buscar(e.target.value)}
+          />
+          {mensaje && <span className="text-sm text-red-600">{mensaje}</span>}
+        </div>
+
+        <div className="flex gap-2">
+          <button
+            onClick={() => cambiarFiltroPago("todos")}
+            className={`px-3 py-1 rounded-lg text-xs font-medium border ${
+              filtroPago === "todos" ? "bg-gray-900 text-white border-gray-900" : "border-gray-300"
+            }`}
+          >
+            Todos
+          </button>
+          <button
+            onClick={() => cambiarFiltroPago("pendiente")}
+            className={`px-3 py-1 rounded-lg text-xs font-medium border ${
+              filtroPago === "pendiente" ? "bg-gray-900 text-white border-gray-900" : "border-gray-300"
+            }`}
+          >
+            Pendiente
+          </button>
+          <button
+            onClick={() => cambiarFiltroPago("confirmado")}
+            className={`px-3 py-1 rounded-lg text-xs font-medium border ${
+              filtroPago === "confirmado" ? "bg-gray-900 text-white border-gray-900" : "border-gray-300"
+            }`}
+          >
+            Confirmado
+          </button>
+        </div>
       </div>
 
       <div className="overflow-x-auto">

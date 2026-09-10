@@ -21,7 +21,8 @@ export type InscritoListado = {
 };
 
 export async function listarInscritosAction(
-  busqueda: string
+  busqueda: string,
+  filtroPago: "todos" | "pendiente" | "confirmado" = "todos"
 ): Promise<InscritoListado[]> {
   await requireAdmin();
   const supabase = createAdminClient();
@@ -40,6 +41,12 @@ export async function listarInscritosAction(
     );
   }
 
+  if (filtroPago === "pendiente") {
+    query = query.in("estado_pago", ["pendiente_pago", "comprobante_en_revision"]);
+  } else if (filtroPago === "confirmado") {
+    query = query.eq("estado_pago", "pago_confirmado");
+  }
+
   const { data, error } = await query;
 
   if (error) {
@@ -49,7 +56,6 @@ export async function listarInscritosAction(
 
   return data ?? [];
 }
-
 export type InscritoDetalle = {
   id: string;
   nombres_completos: string;
