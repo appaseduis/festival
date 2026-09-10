@@ -21,7 +21,20 @@ export default function FormularioEditarInscrito({
   actividades: Actividad[];
 }) {
   const router = useRouter();
-  const [form, setForm] = useState({
+    const [form, setForm] = useState<{
+    nombres_completos: string;
+    documento: string;
+    correo: string;
+    celular: string;
+    genero: "M" | "F";
+    programa_academico: string;
+    talla_id: string;
+    actividades_ids: string[];
+    actividad_otro: string;
+    comentarios: string;
+    tipo_egresado: "socio" | "no_socio";
+    metodo_pago: "bold" | "bancolombia" | "efectivo" | "";
+  }>({
     nombres_completos: inscrito.nombres_completos,
     documento: inscrito.documento,
     correo: inscrito.correo,
@@ -33,6 +46,7 @@ export default function FormularioEditarInscrito({
     actividad_otro: inscrito.actividad_otro ?? "",
     comentarios: inscrito.comentarios ?? "",
     tipo_egresado: inscrito.tipo_egresado,
+    metodo_pago: inscrito.metodo_pago ?? "",
   });
 
   const [acompanantes, setAcompanantes] = useState<Acompanante[]>(inscrito.acompanantes);
@@ -66,7 +80,7 @@ export default function FormularioEditarInscrito({
     setAcompanantes((prev) => prev.filter((_, i) => i !== index));
   }
 
-  async function guardar() {
+    async function guardar() {
     setGuardando(true);
     setMensaje(null);
 
@@ -74,6 +88,7 @@ export default function FormularioEditarInscrito({
       ...form,
       actividad_otro: form.actividad_otro || null,
       comentarios: form.comentarios || null,
+      metodo_pago: form.metodo_pago || null,
       acompanantes,
     });
 
@@ -230,6 +245,35 @@ export default function FormularioEditarInscrito({
             >
               <option value="socio">Socio</option>
               <option value="no_socio">No socio</option>
+            </select>
+          </label>
+                    <label className="block">
+            <span className="block text-sm font-medium text-gray-700 mb-1">Tipo</span>
+            <select
+              className="input"
+              value={form.tipo_egresado}
+              onChange={(e) => actualizarCampo("tipo_egresado", e.target.value as "socio" | "no_socio")}
+            >
+              <option value="socio">Socio</option>
+              <option value="no_socio">No socio</option>
+            </select>
+          </label>
+          <label className="block">
+            <span className="block text-sm font-medium text-gray-700 mb-1">Método de pago</span>
+            <select
+              className="input"
+              value={form.metodo_pago}
+              onChange={(e) =>
+                actualizarCampo(
+                  "metodo_pago",
+                  e.target.value as "bold" | "bancolombia" | "efectivo" | ""
+                )
+              }
+            >
+              <option value="">Sin definir</option>
+              <option value="bold">Bold</option>
+              <option value="bancolombia">Bancolombia</option>
+              <option value="efectivo">Efectivo</option>
             </select>
           </label>
         </div>

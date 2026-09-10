@@ -69,6 +69,7 @@ export type InscritoDetalle = {
   actividad_otro: string | null;
   comentarios: string | null;
   tipo_egresado: "socio" | "no_socio";
+  metodo_pago: "bold" | "bancolombia" | "efectivo" | null;
   estado_pago: string;
   estado_inscripcion: string;
   total: number;
@@ -84,7 +85,7 @@ export async function obtenerInscritoDetalleAction(
   const { data: inscrito, error } = await supabase
     .from("inscritos")
     .select(
-      "id, nombres_completos, documento, correo, celular, genero, programa_academico, talla_id, actividad_otro, comentarios, tipo_egresado, estado_pago, estado_inscripcion, total"
+      "id, nombres_completos, documento, correo, celular, genero, programa_academico, talla_id, actividad_otro, comentarios, tipo_egresado, metodo_pago, estado_pago, estado_inscripcion, total"
     )
     .eq("id", id)
     .single();
@@ -107,7 +108,6 @@ export async function obtenerInscritoDetalleAction(
     actividades_ids: (actividadesRelacion ?? []).map((r) => r.actividad_id),
   };
 }
-
 export type DatosEdicionInscrito = {
   nombres_completos: string;
   documento: string;
@@ -120,6 +120,7 @@ export type DatosEdicionInscrito = {
   actividad_otro: string | null;
   comentarios: string | null;
   tipo_egresado: "socio" | "no_socio";
+  metodo_pago: "bold" | "bancolombia" | "efectivo" | null;
   acompanantes: { id?: string; nombre: string; documento: string; edad: number }[];
 };
 export type ResultadoEdicion = { ok: true } | { ok: false; error: string };
@@ -158,7 +159,7 @@ export async function actualizarInscritoAction(
   const subtotalAcompanantes = config.precio_acompanante * datos.acompanantes.length;
   const total = precioEgresado + subtotalAcompanantes;
 
-    const { error: errorUpdate } = await supabase
+      const { error: errorUpdate } = await supabase
     .from("inscritos")
     .update({
       nombres_completos: datos.nombres_completos,
@@ -171,13 +172,14 @@ export async function actualizarInscritoAction(
       actividad_otro: datos.actividad_otro,
       comentarios: datos.comentarios,
       tipo_egresado: datos.tipo_egresado,
+      metodo_pago: datos.metodo_pago,
       cantidad_acompanantes: datos.acompanantes.length,
       subtotal_egresado: precioEgresado,
       subtotal_acompanantes: subtotalAcompanantes,
       total,
     })
     .eq("id", id);
-
+    
   if (errorUpdate) {
     console.error("Error actualizando inscrito:", errorUpdate);
     return { ok: false, error: "No se pudo guardar la inscripción." };

@@ -5,7 +5,7 @@ export type EstadoPago =
   | "pago_rechazado";
 
 export type EstadoInscripcion = "registrada" | "confirmada" | "cancelada";
-export type MetodoPago = "bold" | "bancolombia";
+export type MetodoPago = "bold" | "bancolombia" | "efectivo";
 export type Genero = "M" | "F";
 export type TipoEgresado = "socio" | "no_socio";
 
