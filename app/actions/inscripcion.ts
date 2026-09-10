@@ -72,11 +72,6 @@ export async function obtenerDatosFormularioAction() {
       .order("orden"),
   ]);
 
-  // 🔍 DIAGNÓSTICO TEMPORAL — borrar después de resolver el problema
-  console.log("DEBUG tallas.error:", JSON.stringify(tallas.error));
-  console.log("DEBUG tallas.status:", tallas.status, tallas.statusText);
-  console.log("DEBUG tallas.count:", tallas.count);
-
   return {
     config: config.data,
     tallas: tallas.data ?? [],
