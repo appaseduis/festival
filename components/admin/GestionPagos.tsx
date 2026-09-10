@@ -17,6 +17,7 @@ function formatoCOP(valor: number) {
 }
 
 import ModalDetalleInscrito from "@/components/admin/ModalDetalleInscrito";
+import BotonMensajePago from "@/components/admin/BotonMensajePago";
 
 const ETIQUETA_ESTADO: Record<string, { texto: string; color: string }> = {
   pendiente_pago: { texto: "Pendiente", color: "bg-gray-100 text-gray-700" },
@@ -131,7 +132,7 @@ export default function GestionPagos({
 
                 return (
                   <tr key={i.id} className="border-b border-gray-100 hover:bg-gray-50">
-                                        <td className="px-4 py-3">
+                      <td className="px-4 py-3">
                       <a
                         href={`/admin/inscritos/${i.id}`}
                         className="font-medium text-navy underline hover:text-[#00A3E0]"
@@ -154,7 +155,16 @@ export default function GestionPagos({
                         {estado.texto}
                       </span>
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-3 space-y-2">
+                      {(i.estado_pago === "pendiente_pago" ||
+                        i.estado_pago === "comprobante_en_revision") && (
+                        <BotonMensajePago
+                          nombre={i.nombres_completos}
+                          celular={i.celular}
+                          total={i.total}
+                          cantidadAcompanantes={i.cantidad_acompanantes}
+                        />
+                      )}
                       {(i.estado_pago === "pendiente_pago" ||
                         i.estado_pago === "comprobante_en_revision") && (
                         <div className="flex gap-2 flex-wrap">

@@ -13,6 +13,7 @@ export type InscripcionPago = {
   total: number;
   estado_pago: string;
   created_at: string;
+  cantidad_acompanantes: number;
 };
 
 export async function listarInscripcionesPagoAction(
@@ -24,7 +25,7 @@ export async function listarInscripcionesPagoAction(
   let query = supabase
     .from("inscritos")
     .select(
-      "id, nombres_completos, documento, celular, tipo_egresado, metodo_pago, total, estado_pago, created_at"
+      "id, nombres_completos, documento, celular, tipo_egresado, metodo_pago, total, estado_pago, created_at, cantidad_acompanantes"
     )
     .order("created_at", { ascending: false })
     .limit(200);
