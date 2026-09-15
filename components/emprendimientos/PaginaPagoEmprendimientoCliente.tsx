@@ -108,7 +108,7 @@ export default function PaginaPagoEmprendimientoCliente({
         </div>
       )}
 
-      {metodoElegido === "bold" && (
+            {metodoElegido === "bold" && (
         <div className="rounded-xl border border-gray-200 p-4 text-sm text-gray-700 space-y-3">
           <p className="font-medium">Pago con Bold</p>
           <BotonPagoBold
@@ -116,6 +116,21 @@ export default function PaginaPagoEmprendimientoCliente({
             amount={datosIniciales.valor_pago}
             prefix="emp"
           />
+
+          <p className="text-gray-600 text-xs">
+            Una vez completes el pago con Bold, puedes avisarnos por WhatsApp si lo prefieres.
+          </p>
+
+          <a
+            href={`https://wa.me/573242606004?text=${encodeURIComponent(
+              `Hola, realicé el pago con Bold del stand para mi emprendimiento "${datosIniciales.nombre_emprendimiento}".`
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block text-center bg-green-600 hover:bg-green-700 text-white font-medium py-3 rounded-lg"
+          >
+            Avisar por WhatsApp
+          </a>
         </div>
       )}
 
@@ -156,9 +171,20 @@ export default function PaginaPagoEmprendimientoCliente({
             </button>
           </div>
 
-          <p className="text-amber-700">
+                    <p className="text-amber-700">
             Después de transferir, envía el comprobante por WhatsApp al número de ASEDUIS.
           </p>
+
+          <a
+            href={`https://wa.me/573242606004?text=${encodeURIComponent(
+              `Hola, adjunto el comprobante de pago de mi stand para el emprendimiento "${datosIniciales.nombre_emprendimiento}".`
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block text-center bg-green-600 hover:bg-green-700 text-white font-medium py-3 rounded-lg"
+          >
+            Enviar comprobante por WhatsApp
+          </a>
         </div>
       )}
 
