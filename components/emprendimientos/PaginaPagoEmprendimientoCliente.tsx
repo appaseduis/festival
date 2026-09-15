@@ -108,7 +108,7 @@ export default function PaginaPagoEmprendimientoCliente({
         </div>
       )}
 
-      {metodoElegido === "bold" && (
+        {metodoElegido === "bold" && (
         <div className="rounded-xl border border-gray-200 p-4 text-sm text-gray-700 space-y-3">
           <div className="flex items-center justify-between">
             <p className="font-medium">Pago con Bold</p>
@@ -120,6 +120,11 @@ export default function PaginaPagoEmprendimientoCliente({
               Cambiar método
             </button>
           </div>
+          <BotonPagoBold
+            inscripcionId={datosIniciales.id}
+            amount={datosIniciales.valor_pago}
+            prefix="emp"
+          />
 
           <p className="text-gray-600 text-xs">
             Una vez completes el pago con Bold, puedes avisarnos por WhatsApp si lo prefieres.
