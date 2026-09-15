@@ -42,7 +42,8 @@ export async function crearEmprendimientoAction(
 }
 
 export async function listarEmprendimientosAction(
-  filtro: EstadoEmprendimiento | "todos"
+  filtro: EstadoEmprendimiento | "todos",
+  busqueda: string = ""
 ): Promise<Emprendimiento[]> {
   await requireAdmin();
   const supabase = createAdminClient();
@@ -54,6 +55,12 @@ export async function listarEmprendimientosAction(
 
   if (filtro !== "todos") {
     query = query.eq("estado", filtro);
+  }
+
+  if (busqueda.trim()) {
+    query = query.or(
+      `nombre_emprendimiento.ilike.%${busqueda}%,nombre_responsable.ilike.%${busqueda}%`
+    );
   }
 
   const { data, error } = await query;

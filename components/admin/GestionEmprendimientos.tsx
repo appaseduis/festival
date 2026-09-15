@@ -11,6 +11,8 @@ import {
 } from "@/app/actions/emprendimiento";
 import type { Emprendimiento, EstadoEmprendimiento } from "@/types/database";
 
+const [busqueda, setBusqueda] = useState("");
+
 const FILTROS: { valor: EstadoEmprendimiento | "todos"; label: string }[] = [
   { valor: "todos", label: "Todos" },
   { valor: "preinscrito", label: "Preinscritos" },
@@ -54,10 +56,18 @@ export default function GestionEmprendimientos({
   const [pagoAbiertoId, setPagoAbiertoId] = useState<string | null>(null);
   const [mensajeCopiadoId, setMensajeCopiadoId] = useState<string | null>(null);
 
-  function cambiarFiltro(nuevo: EstadoEmprendimiento | "todos") {
+    function cambiarFiltro(nuevo: EstadoEmprendimiento | "todos") {
     setFiltro(nuevo);
     startTransition(async () => {
-      const resultado = await listarEmprendimientosAction(nuevo);
+      const resultado = await listarEmprendimientosAction(nuevo, busqueda);
+      setEmprendimientos(resultado);
+    });
+  }
+
+  function buscar(valor: string) {
+    setBusqueda(valor);
+    startTransition(async () => {
+      const resultado = await listarEmprendimientosAction(filtro, valor);
       setEmprendimientos(resultado);
     });
   }
@@ -144,18 +154,27 @@ Cualquier duda, quedamos atentos. ¡Nos vemos en octubre! 🎓`;
 
   return (
     <div>
-      <div className="flex gap-2 mb-4 flex-wrap">
-        {FILTROS.map((f) => (
-          <button
-            key={f.valor}
-            onClick={() => cambiarFiltro(f.valor)}
-            className={`px-4 py-2 rounded-lg text-sm font-medium border ${
-              filtro === f.valor ? "bg-gray-900 text-white border-gray-900" : "border-gray-300"
-            }`}
-          >
-            {f.label}
-          </button>
-        ))}
+            <div className="space-y-3 mb-4">
+        <input
+          className="input max-w-sm"
+          placeholder="Buscar por nombre del emprendimiento o del responsable..."
+          value={busqueda}
+          onChange={(e) => buscar(e.target.value)}
+        />
+
+        <div className="flex gap-2 flex-wrap">
+          {FILTROS.map((f) => (
+            <button
+              key={f.valor}
+              onClick={() => cambiarFiltro(f.valor)}
+              className={`px-4 py-2 rounded-lg text-sm font-medium border ${
+                filtro === f.valor ? "bg-gray-900 text-white border-gray-900" : "border-gray-300"
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
