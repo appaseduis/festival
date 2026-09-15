@@ -11,7 +11,6 @@ import {
 } from "@/app/actions/emprendimiento";
 import type { Emprendimiento, EstadoEmprendimiento } from "@/types/database";
 
-const [busqueda, setBusqueda] = useState("");
 
 const FILTROS: { valor: EstadoEmprendimiento | "todos"; label: string }[] = [
   { valor: "todos", label: "Todos" },
@@ -55,6 +54,7 @@ export default function GestionEmprendimientos({
   const [guardandoValorId, setGuardandoValorId] = useState<string | null>(null);
   const [pagoAbiertoId, setPagoAbiertoId] = useState<string | null>(null);
   const [mensajeCopiadoId, setMensajeCopiadoId] = useState<string | null>(null);
+  const [busqueda, setBusqueda] = useState("");
 
     function cambiarFiltro(nuevo: EstadoEmprendimiento | "todos") {
     setFiltro(nuevo);
