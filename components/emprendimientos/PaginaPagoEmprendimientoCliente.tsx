@@ -108,14 +108,18 @@ export default function PaginaPagoEmprendimientoCliente({
         </div>
       )}
 
-            {metodoElegido === "bold" && (
+      {metodoElegido === "bold" && (
         <div className="rounded-xl border border-gray-200 p-4 text-sm text-gray-700 space-y-3">
-          <p className="font-medium">Pago con Bold</p>
-          <BotonPagoBold
-            inscripcionId={datosIniciales.id}
-            amount={datosIniciales.valor_pago}
-            prefix="emp"
-          />
+          <div className="flex items-center justify-between">
+            <p className="font-medium">Pago con Bold</p>
+            <button
+              type="button"
+              onClick={() => setMetodoElegido(null)}
+              className="text-xs text-navy underline"
+            >
+              Cambiar método
+            </button>
+          </div>
 
           <p className="text-gray-600 text-xs">
             Una vez completes el pago con Bold, puedes avisarnos por WhatsApp si lo prefieres.
@@ -136,7 +140,16 @@ export default function PaginaPagoEmprendimientoCliente({
 
       {metodoElegido === "bancolombia" && (
         <div className="rounded-xl border border-gray-200 p-4 text-sm text-gray-700 space-y-3">
-          <p className="font-medium">Pago mediante Bancolombia</p>
+          <div className="flex items-center justify-between">
+            <p className="font-medium">Pago mediante Bancolombia</p>
+            <button
+              type="button"
+              onClick={() => setMetodoElegido(null)}
+              className="text-xs text-navy underline"
+            >
+              Cambiar método
+            </button>
+          </div>
 
           {infoBancolombia?.qr_url ? (
             <div className="flex flex-col items-center gap-3">
