@@ -63,11 +63,24 @@ export async function POST(req: NextRequest) {
 
   // El prefijo del order-id nos dice a qué módulo pertenece el pago.
   const esBarismo = reference.startsWith("bar_");
-  const id = esBarismo ? reference.replace("bar_", "") : reference;
+  const esEmprendimiento = reference.startsWith("emp_");
+  const id = esBarismo
+    ? reference.replace("bar_", "")
+    : esEmprendimiento
+    ? reference.replace("emp_", "")
+    : reference;
 
-  const tabla = esBarismo ? "competencia_barismo" : "inscritos";
-  const rpc = esBarismo ? "confirmar_pago_barismo" : "confirmar_pago";
-  const paramId = esBarismo ? "p_id" : "p_inscrito_id";
+  const tabla = esBarismo
+    ? "competencia_barismo"
+    : esEmprendimiento
+    ? "emprendimientos"
+    : "inscritos";
+  const rpc = esBarismo
+    ? "confirmar_pago_barismo"
+    : esEmprendimiento
+    ? "confirmar_pago_emprendimiento"
+    : "confirmar_pago";
+  const paramId = esBarismo || esEmprendimiento ? "p_id" : "p_inscrito_id";
 
   // Idempotencia: si ya está en el estado final, no lo reprocesamos
   const { data: actual } = await supabase
@@ -80,11 +93,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true, yaProcesado: true });
   }
 
-  const { error } = await supabase.rpc(rpc, {
+    const parametrosRpc: Record<string, string> = {
     [paramId]: id,
     p_nuevo_estado: nuevoEstado,
-    p_confirmado_por: "bold_webhook",
-  });
+  };
+  if (!esEmprendimiento) {
+    parametrosRpc.p_confirmado_por = "bold_webhook";
+  }
+
+  const { error } = await supabase.rpc(rpc, parametrosRpc);
 
   if (error) {
     console.error("Error confirmando pago desde webhook de Bold:", error);

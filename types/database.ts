@@ -125,6 +125,9 @@ export interface Emprendimiento {
   estado: EstadoEmprendimiento;
   notas_admin: string | null;
   created_at: string;
+  valor_pago: number | null;
+  metodo_pago: "bold" | "bancolombia" | null;
+  estado_pago: "pendiente_pago" | "pago_confirmado" | "pago_rechazado";
 }
 
 export interface CrearEmprendimientoInput {

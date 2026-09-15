@@ -91,3 +91,87 @@ export async function eliminarEmprendimientoAction(id: string): Promise<{ ok: bo
 
   return { ok: true };
 }
+
+export async function asignarValorPagoAction(
+  id: string,
+  valor: number
+): Promise<{ ok: boolean }> {
+  await requireAdmin();
+  const supabase = createAdminClient();
+
+  const { error } = await supabase
+    .from("emprendimientos")
+    .update({ valor_pago: valor })
+    .eq("id", id);
+
+  return { ok: !error };
+}
+
+export type DatosPagoEmprendimiento = {
+  id: string;
+  nombre_emprendimiento: string;
+  nombre_responsable: string;
+  valor_pago: number | null;
+  metodo_pago: "bold" | "bancolombia" | null;
+  estado_pago: "pendiente_pago" | "pago_confirmado" | "pago_rechazado";
+};
+
+export async function obtenerDatosPagoEmprendimientoAction(
+  id: string
+): Promise<DatosPagoEmprendimiento | null> {
+  const supabase = createAdminClient();
+
+  const { data, error } = await supabase
+    .from("emprendimientos")
+    .select("id, nombre_emprendimiento, nombre_responsable, valor_pago, metodo_pago, estado_pago")
+    .eq("id", id)
+    .eq("estado", "aceptado")
+    .single();
+
+  if (error || !data) return null;
+  return data;
+}
+
+export async function seleccionarMetodoPagoEmprendimientoAction(
+  id: string,
+  metodo: "bold" | "bancolombia"
+): Promise<{ ok: boolean }> {
+  const supabase = createAdminClient();
+
+  const { error } = await supabase
+    .from("emprendimientos")
+    .update({ metodo_pago: metodo })
+    .eq("id", id);
+
+  return { ok: !error };
+}
+
+export async function confirmarPagoEmprendimientoAction(
+  id: string,
+  nuevoEstado: "pago_confirmado" | "pago_rechazado"
+): Promise<{ ok: boolean }> {
+  await requireAdmin();
+  const supabase = createAdminClient();
+
+  const { error } = await supabase.rpc("confirmar_pago_emprendimiento", {
+    p_id: id,
+    p_nuevo_estado: nuevoEstado,
+  });
+
+  return { ok: !error };
+}
+
+export async function corregirTipoEgresadoAction(
+  id: string,
+  tipoEgresado: "socio" | "no_socio"
+): Promise<{ ok: boolean }> {
+  await requireAdmin();
+  const supabase = createAdminClient();
+
+  const { error } = await supabase
+    .from("emprendimientos")
+    .update({ tipo_egresado: tipoEgresado })
+    .eq("id", id);
+
+  return { ok: !error };
+}
