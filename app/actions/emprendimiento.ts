@@ -42,7 +42,7 @@ export async function crearEmprendimientoAction(
 }
 
 export async function listarEmprendimientosAction(
-  filtro: EstadoEmprendimiento | "todos",
+  filtro: EstadoEmprendimiento | "todos" | "pago_confirmado",
   busqueda: string = ""
 ): Promise<Emprendimiento[]> {
   await requireAdmin();
@@ -53,7 +53,9 @@ export async function listarEmprendimientosAction(
     .select("*")
     .order("created_at", { ascending: false });
 
-  if (filtro !== "todos") {
+  if (filtro === "pago_confirmado") {
+    query = query.eq("estado_pago", "pago_confirmado");
+  } else if (filtro !== "todos") {
     query = query.eq("estado", filtro);
   }
 

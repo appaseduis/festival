@@ -12,10 +12,11 @@ import {
 import type { Emprendimiento, EstadoEmprendimiento } from "@/types/database";
 
 
-const FILTROS: { valor: EstadoEmprendimiento | "todos"; label: string }[] = [
+const FILTROS: { valor: EstadoEmprendimiento | "todos" | "pago_confirmado"; label: string }[] = [
   { valor: "todos", label: "Todos" },
   { valor: "preinscrito", label: "Preinscritos" },
   { valor: "aceptado", label: "Aceptados" },
+  { valor: "pago_confirmado", label: "Pagos confirmados" },
   { valor: "rechazado", label: "Rechazados" },
 ];
 
@@ -44,7 +45,7 @@ export default function GestionEmprendimientos({
 }: {
   emprendimientosIniciales: Emprendimiento[];
 }) {
-  const [filtro, setFiltro] = useState<EstadoEmprendimiento | "todos">("todos");
+  const [filtro, setFiltro] = useState<EstadoEmprendimiento | "todos" | "pago_confirmado">("todos");
   const [emprendimientos, setEmprendimientos] = useState(emprendimientosIniciales);
   const [pending, startTransition] = useTransition();
   const [procesando, setProcesando] = useState<string | null>(null);
@@ -56,7 +57,7 @@ export default function GestionEmprendimientos({
   const [mensajeCopiadoId, setMensajeCopiadoId] = useState<string | null>(null);
   const [busqueda, setBusqueda] = useState("");
 
-    function cambiarFiltro(nuevo: EstadoEmprendimiento | "todos") {
+      function cambiarFiltro(nuevo: EstadoEmprendimiento | "todos" | "pago_confirmado") {
     setFiltro(nuevo);
     startTransition(async () => {
       const resultado = await listarEmprendimientosAction(nuevo, busqueda);
