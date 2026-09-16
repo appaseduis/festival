@@ -69,7 +69,7 @@ export type InscritoDetalle = {
   actividad_otro: string | null;
   comentarios: string | null;
   tipo_egresado: "socio" | "no_socio";
-  metodo_pago: "bold" | "bancolombia" | "efectivo" | null;
+  metodo_pago: "bold" | "bancolombia" | "efectivo" | "banco_bogota" | null;
   estado_pago: string;
   estado_inscripcion: string;
   total: number;
@@ -120,7 +120,7 @@ export type DatosEdicionInscrito = {
   actividad_otro: string | null;
   comentarios: string | null;
   tipo_egresado: "socio" | "no_socio";
-  metodo_pago: "bold" | "bancolombia" | "efectivo" | null;
+  metodo_pago: "bold" | "bancolombia" | "efectivo" | "banco_bogota" | null;
   acompanantes: { id?: string; nombre: string; documento: string; edad: number }[];
 };
 export type ResultadoEdicion = { ok: true } | { ok: false; error: string };

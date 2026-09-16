@@ -33,7 +33,7 @@ export default function FormularioEditarInscrito({
     actividad_otro: string;
     comentarios: string;
     tipo_egresado: "socio" | "no_socio";
-    metodo_pago: "bold" | "bancolombia" | "efectivo" | "";
+    metodo_pago: "bold" | "bancolombia" | "efectivo" | "banco_bogota" | "";
   }>({
     nombres_completos: inscrito.nombres_completos,
     documento: inscrito.documento,
@@ -266,13 +266,14 @@ export default function FormularioEditarInscrito({
               onChange={(e) =>
                 actualizarCampo(
                   "metodo_pago",
-                  e.target.value as "bold" | "bancolombia" | "efectivo" | ""
+                  e.target.value as "bold" | "bancolombia" | "efectivo" | "banco_bogota" | ""
                 )
               }
             >
               <option value="">Sin definir</option>
               <option value="bold">Bold</option>
               <option value="bancolombia">Bancolombia</option>
+              <option value="banco_bogota">Banco de Bogotá</option>
               <option value="efectivo">Efectivo</option>
             </select>
           </label>
