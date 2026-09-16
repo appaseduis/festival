@@ -16,6 +16,7 @@ export type ConfiguracionCompleta = {
   bancolombia_datos: string | null;
   bold_activo: boolean;
   precio_barismo: number;
+  emprendimientos_abierto: boolean;
 };
 
 export async function obtenerConfiguracionAction(): Promise<ConfiguracionCompleta | null> {

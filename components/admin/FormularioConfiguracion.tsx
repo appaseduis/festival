@@ -147,6 +147,20 @@ export default function FormularioConfiguracion({
         </label>
       </div>
 
+      <div>
+        <h3 className="font-semibold text-gray-900 mb-3">Emprendimientos</h3>
+        <label className="flex items-center gap-2">
+          <input
+            type="checkbox"
+            checked={config.emprendimientos_abierto}
+            onChange={(e) => actualizarCampo("emprendimientos_abierto", e.target.checked)}
+          />
+          <span className="text-sm text-gray-700">
+            Convocatoria de emprendimientos abierta (desmarca para cerrarla)
+          </span>
+        </label>
+      </div>
+
       <button
         onClick={guardar}
         disabled={guardando}
