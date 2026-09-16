@@ -7,10 +7,11 @@ const QR_X_PERCENT = 0.315;
 const QR_Y_PERCENT = 0.375;
 const QR_SIZE_PERCENT = 0.37;
 
-// Posición del texto del nombre, debajo del recuadro del QR,
-// como porcentaje del ancho/alto de la plantilla.
-const NOMBRE_Y_PERCENT = 0.795;
-const NOMBRE_FONT_SIZE_PERCENT = 0.028;
+// Posición del texto del nombre, debajo del recuadro del QR y por
+// debajo de "CONTROL KIT / ALMUERZO", como porcentaje de la plantilla.
+const NOMBRE_Y_PERCENT = 0.97;
+const NOMBRE_FONT_SIZE_MAX_PERCENT = 0.028;
+const NOMBRE_ANCHO_MAX_PERCENT = 0.82; // no puede ocupar más del 82% del ancho
 
 export default function ModalQR({
   nombre,
@@ -51,17 +52,25 @@ export default function ModalQR({
         const qrY = canvas.height * QR_Y_PERCENT;
         ctx.drawImage(imgQR, qrX, qrY, qrSize, qrSize);
 
-        // 3. Nombre del inscrito, centrado, debajo del recuadro
-        const fontSize = Math.round(canvas.width * NOMBRE_FONT_SIZE_PERCENT);
-        ctx.font = `700 ${fontSize}px Arial, sans-serif`;
-        ctx.fillStyle = "#FFFFFF";
+        // 3. Nombre del inscrito: tamaño de letra se reduce
+        // automáticamente si el nombre es muy largo para no
+        // desbordarse ni chocar con el resto del diseño.
+        const nombreTexto = nombre.toUpperCase();
+        const anchoMaximo = canvas.width * NOMBRE_ANCHO_MAX_PERCENT;
+        let fontSize = Math.round(canvas.width * NOMBRE_FONT_SIZE_MAX_PERCENT);
+
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillText(
-          nombre.toUpperCase(),
-          canvas.width / 2,
-          canvas.height * NOMBRE_Y_PERCENT
-        );
+        ctx.fillStyle = "#FFFFFF";
+
+        do {
+          ctx.font = `700 ${fontSize}px Arial, sans-serif`;
+          const anchoTexto = ctx.measureText(nombreTexto).width;
+          if (anchoTexto <= anchoMaximo) break;
+          fontSize -= 1;
+        } while (fontSize > 10);
+
+        ctx.fillText(nombreTexto, canvas.width / 2, canvas.height * NOMBRE_Y_PERCENT);
 
         URL.revokeObjectURL(urlQR);
 
