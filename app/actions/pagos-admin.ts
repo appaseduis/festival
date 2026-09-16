@@ -17,7 +17,8 @@ export type InscripcionPago = {
 };
 
 export async function listarInscripcionesPagoAction(
-  filtro: "pendientes" | "confirmados" | "todas"
+  filtro: "pendientes" | "confirmados" | "todas",
+  busqueda: string = ""
 ): Promise<InscripcionPago[]> {
   await requireAdmin();
   const supabase = createAdminClient();
@@ -34,6 +35,12 @@ export async function listarInscripcionesPagoAction(
     query = query.in("estado_pago", ["pendiente_pago", "comprobante_en_revision"]);
   } else if (filtro === "confirmados") {
     query = query.eq("estado_pago", "pago_confirmado");
+  }
+
+  if (busqueda.trim()) {
+    query = query.or(
+      `nombres_completos.ilike.%${busqueda}%,documento.ilike.%${busqueda}%`
+    );
   }
 
   const { data, error } = await query;

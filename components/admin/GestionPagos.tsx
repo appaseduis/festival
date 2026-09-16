@@ -7,6 +7,8 @@ import {
   marcarEnRevisionAction,
   type InscripcionPago,
 } from "@/app/actions/pagos-admin";
+import ModalDetalleInscrito from "@/components/admin/ModalDetalleInscrito";
+import BotonMensajePago from "@/components/admin/BotonMensajePago";
 
 function formatoCOP(valor: number) {
   return new Intl.NumberFormat("es-CO", {
@@ -16,8 +18,6 @@ function formatoCOP(valor: number) {
   }).format(valor);
 }
 
-import ModalDetalleInscrito from "@/components/admin/ModalDetalleInscrito";
-import BotonMensajePago from "@/components/admin/BotonMensajePago";
 
 const ETIQUETA_ESTADO: Record<string, { texto: string; color: string }> = {
   pendiente_pago: { texto: "Pendiente", color: "bg-gray-100 text-gray-700" },
@@ -36,12 +36,21 @@ export default function GestionPagos({
   const [pending, startTransition] = useTransition();
   const [procesando, setProcesando] = useState<string | null>(null);
   const [mensaje, setMensaje] = useState<string | null>(null);
-    const [verDetalleId, setVerDetalleId] = useState<string | null>(null);
+  const [verDetalleId, setVerDetalleId] = useState<string | null>(null);
+  const [busqueda, setBusqueda] = useState("");
 
-    function cambiarFiltro(nuevo: "pendientes" | "confirmados" | "todas") {
+  function cambiarFiltro(nuevo: "pendientes" | "confirmados" | "todas") {
     setFiltro(nuevo);
     startTransition(async () => {
-      const resultado = await listarInscripcionesPagoAction(nuevo);
+      const resultado = await listarInscripcionesPagoAction(nuevo, busqueda);
+      setInscripciones(resultado);
+    });
+  }
+
+  function buscar(valor: string) {
+    setBusqueda(valor);
+    startTransition(async () => {
+      const resultado = await listarInscripcionesPagoAction(filtro, valor);
       setInscripciones(resultado);
     });
   }
@@ -78,31 +87,40 @@ export default function GestionPagos({
 
   return (
     <div>
-        <div className="flex gap-2 mb-4 flex-wrap">
-        <button
-          onClick={() => cambiarFiltro("pendientes")}
-          className={`px-4 py-2 rounded-lg text-sm font-medium border ${
-            filtro === "pendientes" ? "bg-gray-900 text-white border-gray-900" : "border-gray-300"
-          }`}
-        >
-          Pendientes
-        </button>
-        <button
-          onClick={() => cambiarFiltro("confirmados")}
-          className={`px-4 py-2 rounded-lg text-sm font-medium border ${
-            filtro === "confirmados" ? "bg-gray-900 text-white border-gray-900" : "border-gray-300"
-          }`}
-        >
-          Confirmados
-        </button>
-        <button
-          onClick={() => cambiarFiltro("todas")}
-          className={`px-4 py-2 rounded-lg text-sm font-medium border ${
-            filtro === "todas" ? "bg-gray-900 text-white border-gray-900" : "border-gray-300"
-          }`}
-        >
-          Todas
-        </button>
+      <div className="space-y-3 mb-4">
+        <input
+          className="input max-w-sm"
+          placeholder="Buscar por nombre o documento..."
+          value={busqueda}
+          onChange={(e) => buscar(e.target.value)}
+        />
+
+        <div className="flex gap-2 flex-wrap">
+          <button
+            onClick={() => cambiarFiltro("pendientes")}
+            className={`px-4 py-2 rounded-lg text-sm font-medium border ${
+              filtro === "pendientes" ? "bg-gray-900 text-white border-gray-900" : "border-gray-300"
+            }`}
+          >
+            Pendientes
+          </button>
+          <button
+            onClick={() => cambiarFiltro("confirmados")}
+            className={`px-4 py-2 rounded-lg text-sm font-medium border ${
+              filtro === "confirmados" ? "bg-gray-900 text-white border-gray-900" : "border-gray-300"
+            }`}
+          >
+            Confirmados
+          </button>
+          <button
+            onClick={() => cambiarFiltro("todas")}
+            className={`px-4 py-2 rounded-lg text-sm font-medium border ${
+              filtro === "todas" ? "bg-gray-900 text-white border-gray-900" : "border-gray-300"
+            }`}
+          >
+            Todas
+          </button>
+        </div>
       </div>
 
       {mensaje && (
