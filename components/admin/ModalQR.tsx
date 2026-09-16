@@ -61,7 +61,7 @@ export default function ModalQR({
 
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillStyle = "#FFFFFF";
+        ctx.fillStyle = "#000000";
 
         do {
           ctx.font = `700 ${fontSize}px Arial, sans-serif`;
