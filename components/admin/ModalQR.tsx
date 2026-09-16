@@ -3,13 +3,14 @@
 import { useRef } from "react";
 import { QRCodeSVG } from "qrcode.react";
 
-// Posición y tamaño del recuadro blanco dentro de plantilla-qr.png,
-// expresados como PORCENTAJE del ancho/alto total de la imagen (no en
-// píxeles fijos), para que funcione sin importar la resolución exacta
-// del archivo. Si el QR queda desalineado, ajusta estos 3 valores.
 const QR_X_PERCENT = 0.315;
 const QR_Y_PERCENT = 0.375;
 const QR_SIZE_PERCENT = 0.37;
+
+// Posición del texto del nombre, debajo del recuadro del QR,
+// como porcentaje del ancho/alto de la plantilla.
+const NOMBRE_Y_PERCENT = 0.795;
+const NOMBRE_FONT_SIZE_PERCENT = 0.028;
 
 export default function ModalQR({
   nombre,
@@ -26,14 +27,12 @@ export default function ModalQR({
     const svg = contenedorRef.current?.querySelector("svg");
     if (!svg) return;
 
-    // 1. Convertimos el SVG del QR a una imagen que podamos dibujar en canvas
     const svgData = new XMLSerializer().serializeToString(svg);
     const svgBlob = new Blob([svgData], { type: "image/svg+xml;charset=utf-8" });
     const urlQR = URL.createObjectURL(svgBlob);
 
     const imgQR = new Image();
     imgQR.onload = () => {
-      // 2. Cargamos la plantilla del festival
       const imgPlantilla = new Image();
       imgPlantilla.onload = () => {
         const canvas = document.createElement("canvas");
@@ -43,14 +42,26 @@ export default function ModalQR({
         const ctx = canvas.getContext("2d");
         if (!ctx) return;
 
-        // Dibuja la plantilla completa como fondo
+        // 1. Plantilla de fondo
         ctx.drawImage(imgPlantilla, 0, 0, canvas.width, canvas.height);
 
-        // Dibuja el QR encima, en el recuadro blanco
+        // 2. QR encima
         const qrSize = canvas.width * QR_SIZE_PERCENT;
         const qrX = canvas.width * QR_X_PERCENT;
         const qrY = canvas.height * QR_Y_PERCENT;
         ctx.drawImage(imgQR, qrX, qrY, qrSize, qrSize);
+
+        // 3. Nombre del inscrito, centrado, debajo del recuadro
+        const fontSize = Math.round(canvas.width * NOMBRE_FONT_SIZE_PERCENT);
+        ctx.font = `700 ${fontSize}px Arial, sans-serif`;
+        ctx.fillStyle = "#FFFFFF";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(
+          nombre.toUpperCase(),
+          canvas.width / 2,
+          canvas.height * NOMBRE_Y_PERCENT
+        );
 
         URL.revokeObjectURL(urlQR);
 
