@@ -56,7 +56,6 @@ const ESTADO_INICIAL: FormState = {
   acompanantes: [],
 };
 
-
 const TOTAL_PASOS = 5;
 const NOMBRES_PASOS = [
   "Datos personales",
@@ -93,7 +92,7 @@ export default function WizardInscripcion({ config, tallas, actividades }: Props
       setLlaveCopiada(true);
       setTimeout(() => setLlaveCopiada(false), 2000);
     } catch {
-      // Si el navegador bloquea el portapapeles (poco común), no hacemos nada más
+      // Si el navegador bloquea el portapapeles, no se realiza acción adicional
     }
   }
 
@@ -241,6 +240,11 @@ export default function WizardInscripcion({ config, tallas, actividades }: Props
     }
   }
 
+  function volverAMetodos() {
+    setMetodoElegido(null);
+    setInfoBancolombia(null);
+  }
+
   function mensajeWhatsApp(): string {
     const lineas = [
       `*Inscripción ${config.nombre_evento}*`,
@@ -253,7 +257,6 @@ export default function WizardInscripcion({ config, tallas, actividades }: Props
       `Tipo: ${form.tipo_egresado === "socio" ? "Socio" : "No socio"}`,
       `Talla: ${tallas.find((t) => t.id === form.talla_id)?.nombre ?? ""}`,
       `Acompañantes: ${form.acompanantes.length}`,
-      
     ];
 
     form.acompanantes.forEach((a, i) => {
@@ -270,14 +273,14 @@ export default function WizardInscripcion({ config, tallas, actividades }: Props
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-200 border-t-4 border-t-uis-green p-5 sm:p-6 md:p-8">
       <div className="mb-8">
-        {/* Versión móvil: solo el paso actual */}
+        {/* Versión móvil */}
         <div className="flex sm:hidden items-center justify-between text-xs text-gray-500 mb-2">
           <span className="font-semibold text-navy">
             Paso {paso} de {TOTAL_PASOS}: {NOMBRES_PASOS[paso - 1]}
           </span>
         </div>
 
-        {/* Versión desktop/tablet: todos los pasos */}
+        {/* Versión desktop/tablet */}
         <div className="hidden sm:flex justify-between text-xs text-gray-500 mb-2 gap-1">
           {NOMBRES_PASOS.map((nombre, i) => (
             <span
@@ -643,14 +646,32 @@ export default function WizardInscripcion({ config, tallas, actividades }: Props
 
           {metodoElegido === "bold" && resultado && (
             <div className="rounded-xl border border-gray-200 p-4 text-sm text-gray-700 space-y-3">
-              <p className="font-medium">Pago con Bold</p>
+              <div className="flex items-center justify-between">
+                <p className="font-medium">Pago con Bold</p>
+                <button
+                  type="button"
+                  onClick={volverAMetodos}
+                  className="text-xs text-navy underline font-medium"
+                >
+                  ← Cambiar método
+                </button>
+              </div>
               <BotonPagoBold inscripcionId={resultado.id} amount={resultado.total} />
             </div>
           )}
 
           {metodoElegido === "bancolombia" && (
             <div className="rounded-xl border border-gray-200 p-4 text-sm text-gray-700 space-y-3">
-              <p className="font-medium">Pago mediante Bancolombia</p>
+              <div className="flex items-center justify-between">
+                <p className="font-medium">Pago mediante Bancolombia</p>
+                <button
+                  type="button"
+                  onClick={volverAMetodos}
+                  className="text-xs text-navy underline font-medium"
+                >
+                  ← Cambiar método
+                </button>
+              </div>
 
               {infoBancolombia?.qr_url ? (
                 <div className="flex flex-col items-center gap-3">
