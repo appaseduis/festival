@@ -10,6 +10,17 @@ const ETIQUETA_ESTADO: Record<string, string> = {
   rechazado: "Rechazado",
 };
 
+const ETIQUETA_ESTADO_PAGO: Record<string, string> = {
+  pendiente_pago: "Pendiente de pago",
+  pago_confirmado: "Pago confirmado",
+  pago_rechazado: "Pago rechazado",
+};
+
+const ETIQUETA_METODO_PAGO: Record<string, string> = {
+  bold: "Bold",
+  bancolombia: "Bancolombia",
+};
+
 export async function GET() {
   await requireAdmin();
   const supabase = createAdminClient();
@@ -38,6 +49,9 @@ export async function GET() {
     { header: "Tipo egresado", key: "tipo_egresado" },
     { header: "Necesita electricidad", key: "necesita_electricidad" },
     { header: "Estado", key: "estado" },
+    { header: "Valor a pagar", key: "valor_pago" },
+    { header: "Método de pago", key: "metodo_pago" },
+    { header: "Estado de pago", key: "estado_pago" },
     { header: "Notas admin", key: "notas_admin" },
     { header: "Fecha preinscripción", key: "created_at" },
   ];
@@ -55,6 +69,9 @@ export async function GET() {
       tipo_egresado: e.tipo_egresado === "socio" ? "Socio" : "No socio",
       necesita_electricidad: e.necesita_electricidad ? "Sí" : "No",
       estado: ETIQUETA_ESTADO[e.estado] ?? e.estado,
+      valor_pago: e.valor_pago ?? "",
+      metodo_pago: e.metodo_pago ? (ETIQUETA_METODO_PAGO[e.metodo_pago] ?? e.metodo_pago) : "",
+      estado_pago: e.estado_pago ? (ETIQUETA_ESTADO_PAGO[e.estado_pago] ?? e.estado_pago) : "",
       notas_admin: e.notas_admin ?? "",
       created_at: new Date(e.created_at).toLocaleString("es-CO"),
     });
