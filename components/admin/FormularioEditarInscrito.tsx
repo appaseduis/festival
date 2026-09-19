@@ -236,17 +236,6 @@ export default function FormularioEditarInscrito({
               />
             )}
           </label>
-          <label className="block">
-            <span className="block text-sm font-medium text-gray-700 mb-1">Tipo</span>
-            <select
-              className="input"
-              value={form.tipo_egresado}
-              onChange={(e) => actualizarCampo("tipo_egresado", e.target.value as "socio" | "no_socio")}
-            >
-              <option value="socio">Socio</option>
-              <option value="no_socio">No socio</option>
-            </select>
-          </label>
                     <label className="block">
             <span className="block text-sm font-medium text-gray-700 mb-1">Tipo</span>
             <select
