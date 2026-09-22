@@ -6,11 +6,11 @@ import FormularioEmprendimiento from "@/components/emprendimientos/FormularioEmp
 
 export default function PaginaEmprendimientos() {
   const [enviado, setEnviado] = useState(false);
-  const [abierto, setAbierto] = useState<boolean | null>(null);
+  const [abierto, setAbierto] = useState<boolean | null>(true);
 
   useEffect(() => {
     obtenerDatosFormularioAction().then(({ config }) => {
-      setAbierto(config?.emprendimientos_abierto ?? false);
+      setAbierto(config?.emprendimientos_abierto ?? true);
     });
   }, []);
 
