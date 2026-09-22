@@ -5,7 +5,7 @@ import { obtenerDatosFormularioAction } from "@/app/actions/inscripcion";
 import FormularioEmprendimiento from "@/components/emprendimientos/FormularioEmprendimiento";
 
 export default function PaginaEmprendimientos() {
-  const [enviado, setEnviado] = useState(false);
+  const [enviado, setEnviado] = useState(true);
   const [abierto, setAbierto] = useState<boolean | null>(true);
 
   useEffect(() => {
