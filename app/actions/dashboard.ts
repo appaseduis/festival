@@ -23,6 +23,7 @@ export type EstadisticasDashboard = {
   empPagados: number;
   empPendientesPago: number;
   empRecaudado: number;
+  porRecaudar: number;
 };
 
 export async function obtenerEstadisticasAction(): Promise<EstadisticasDashboard> {
@@ -81,6 +82,7 @@ export async function obtenerEstadisticasAction(): Promise<EstadisticasDashboard
       kitsEntregados: 0,
       fichosNecesarios: 0,
       fichosEntregados: 0,
+      porRecaudar: 0,
       ...statsComunes,
     };
   }
@@ -94,6 +96,9 @@ export async function obtenerEstadisticasAction(): Promise<EstadisticasDashboard
     confirmadas: confirmados.length,
     pendientes: activos.length - confirmados.length,
     totalRecaudado: confirmados.reduce((sum, i) => sum + Number(i.total), 0),
+      porRecaudar: activos
+      .filter((i) => i.estado_inscripcion !== "confirmada")
+      .reduce((sum, i) => sum + Number(i.total), 0),
     kitsNecesarios: confirmados.length,
     kitsEntregados: confirmados.filter((i) => i.kit_entregado).length,
     fichosNecesarios: confirmados.reduce((sum, i) => sum + i.cantidad_fichos, 0),

@@ -54,11 +54,14 @@ export default async function PaginaDashboard() {
       titulo: "Inscripciones · Egresados",
       icono: "🎓",
       color: "#002855",
+      progreso: { actual: stats.confirmadas, meta: stats.totalEgresados },
       tarjetas: [
         { label: "Total egresados", valor: stats.totalEgresados },
         { label: "Acompañantes", valor: stats.totalAcompanantes },
-        { label: "Confirmadas", valor: stats.confirmadas },
-        { label: "Pendientes", valor: stats.pendientes },
+        { label: "Confirmadas (pagaron)", valor: stats.confirmadas },
+        { label: "Pendientes de pago", valor: stats.pendientes },
+        { label: "Recaudado", valor: formatoCOP(stats.totalRecaudado) },
+        { label: "Por recaudar", valor: formatoCOP(stats.porRecaudar) },
       ],
     },
     {
