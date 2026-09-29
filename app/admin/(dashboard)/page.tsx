@@ -1,5 +1,7 @@
 import { obtenerEstadisticasAction } from "@/app/actions/dashboard";
 
+export const dynamic = "force-dynamic";
+
 function formatoCOP(valor: number) {
   return new Intl.NumberFormat("es-CO", {
     style: "currency",
@@ -8,47 +10,22 @@ function formatoCOP(valor: number) {
   }).format(valor);
 }
 
-function BarraProgreso({
-  actual,
-  meta,
-  color,
-}: {
-  actual: number;
-  meta: number;
-  color: string;
-}) {
+function BarraProgreso({ actual, meta, color }: { actual: number; meta: number; color: string }) {
   const porcentaje = meta > 0 ? Math.min(100, Math.round((actual / meta) * 100)) : 0;
-
   return (
     <div className="mt-2">
       <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
-        <div
-          className="h-full rounded-full transition-all"
-          style={{ width: `${porcentaje}%`, backgroundColor: color }}
-        />
+        <div className="h-full rounded-full transition-all" style={{ width: `${porcentaje}%`, backgroundColor: color }} />
       </div>
       <p className="text-[11px] text-gray-400 mt-1">{porcentaje}%</p>
     </div>
   );
 }
 
-function TarjetaKPI({
-  icono,
-  label,
-  valor,
-  color,
-}: {
-  icono: string;
-  label: string;
-  valor: string | number;
-  color: string;
-}) {
+function TarjetaKPI({ icono, label, valor, color }: { icono: string; label: string; valor: string | number; color: string }) {
   return (
     <div className="bg-white rounded-2xl border border-gray-200 p-5 flex items-center gap-4">
-      <div
-        className="w-11 h-11 rounded-xl flex items-center justify-center text-xl shrink-0"
-        style={{ backgroundColor: `${color}1A` }}
-      >
+      <div className="w-11 h-11 rounded-xl flex items-center justify-center text-xl shrink-0" style={{ backgroundColor: `${color}1A` }}>
         {icono}
       </div>
       <div className="min-w-0">
@@ -59,12 +36,20 @@ function TarjetaKPI({
   );
 }
 
+type Seccion = {
+  titulo: string;
+  icono: string;
+  color: string;
+  tarjetas: { label: string; valor: string | number }[];
+  progreso?: { actual: number; meta: number };
+};
+
 export default async function PaginaDashboard() {
   const stats = await obtenerEstadisticasAction();
 
-  const recaudoTotal = stats.totalRecaudado + stats.recaudadoBarismo;
+  const recaudoTotal = stats.totalRecaudado + stats.recaudadoBarismo + stats.empRecaudado;
 
-  const secciones = [
+  const secciones: Seccion[] = [
     {
       titulo: "Inscripciones · Egresados",
       icono: "🎓",
@@ -106,7 +91,16 @@ export default async function PaginaDashboard() {
       titulo: "Emprendimientos",
       icono: "🛍️",
       color: "#FF6B6B",
-      tarjetas: [{ label: "Propuestas recibidas", valor: stats.totalEmprendimientos }],
+      progreso: { actual: stats.empPagados, meta: stats.empAceptados },
+      tarjetas: [
+        { label: "Propuestas recibidas", valor: stats.totalEmprendimientos },
+        { label: "Por revisar", valor: stats.empPreinscritos },
+        { label: "Aceptados", valor: stats.empAceptados },
+        { label: "Rechazados", valor: stats.empRechazados },
+        { label: "Pagados", valor: stats.empPagados },
+        { label: "Pendientes de pago", valor: stats.empPendientesPago },
+        { label: "Recaudado", valor: formatoCOP(stats.empRecaudado) },
+      ],
     },
     {
       titulo: "Competencia de Barismo",
@@ -127,7 +121,6 @@ export default async function PaginaDashboard() {
         <p className="text-sm text-gray-500 mt-1">Resumen general del Festival del Egresado UIS</p>
       </div>
 
-      {/* KPIs principales */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <TarjetaKPI icono="💰" label="Recaudo total" valor={formatoCOP(recaudoTotal)} color="#00A3E0" />
         <TarjetaKPI icono="🎓" label="Egresados confirmados" valor={stats.confirmadas} color="#002855" />
@@ -135,21 +128,20 @@ export default async function PaginaDashboard() {
         <TarjetaKPI icono="☕" label="Cupos barismo" valor={`${stats.cuposBarismoOcupados} / 18`} color="#2BB673" />
       </div>
 
-      {/* Secciones detalladas */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        {secciones.map((seccion) => (
-          <div key={seccion.titulo} className="bg-white rounded-2xl border border-gray-200 p-5">
+        {secciones.map((s) => (
+          <div key={s.titulo} className="bg-white rounded-2xl border border-gray-200 p-5">
             <div className="flex items-center gap-2 mb-4">
-              <span className="text-lg">{seccion.icono}</span>
-              <h2 className="text-sm font-semibold text-navy">{seccion.titulo}</h2>
+              <span className="text-lg">{s.icono}</span>
+              <h2 className="text-sm font-semibold text-navy">{s.titulo}</h2>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
-              {seccion.tarjetas.map((t) => (
+              {s.tarjetas.map((t) => (
                 <div
                   key={t.label}
                   className="rounded-xl p-3 border-l-4"
-                  style={{ borderLeftColor: seccion.color, backgroundColor: `${seccion.color}0D` }}
+                  style={{ borderLeftColor: s.color, backgroundColor: `${s.color}0D` }}
                 >
                   <p className="text-xs text-gray-500">{t.label}</p>
                   <p className="text-lg font-bold text-navy mt-0.5">{t.valor}</p>
@@ -157,13 +149,7 @@ export default async function PaginaDashboard() {
               ))}
             </div>
 
-            {seccion.progreso && (
-              <BarraProgreso
-                actual={seccion.progreso.actual}
-                meta={seccion.progreso.meta}
-                color={seccion.color}
-              />
-            )}
+            {s.progreso && <BarraProgreso actual={s.progreso.actual} meta={s.progreso.meta} color={s.color} />}
           </div>
         ))}
       </div>

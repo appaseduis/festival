@@ -17,6 +17,12 @@ export type EstadisticasDashboard = {
   cuposBarismoOcupados: number;
   recaudadoBarismo: number;
   totalEmprendimientos: number;
+  empPreinscritos: number;
+  empAceptados: number;
+  empRechazados: number;
+  empPagados: number;
+  empPendientesPago: number;
+  empRecaudado: number;
 };
 
 export async function obtenerEstadisticasAction(): Promise<EstadisticasDashboard> {
@@ -33,16 +39,35 @@ export async function obtenerEstadisticasAction(): Promise<EstadisticasDashboard
     .from("talentos_culturales")
     .select("*", { count: "exact", head: true });
 
-  const { count: totalEmprendimientos } = await supabase
+  const { data: emprendimientos } = await supabase
     .from("emprendimientos")
-    .select("*", { count: "exact", head: true });
+    .select("estado, estado_pago, valor_pago");
 
-    const { data: barismo } = await supabase
+  const { data: barismo } = await supabase
     .from("competencia_barismo")
     .select("estado_pago, total");
 
+  // Barismo
   const barismoActivos = (barismo ?? []).filter((b) => b.estado_pago !== "pago_rechazado");
   const barismoConfirmados = barismoActivos.filter((b) => b.estado_pago === "pago_confirmado");
+
+  // Emprendimientos
+  const listaEmp = emprendimientos ?? [];
+  const empAceptados = listaEmp.filter((e) => e.estado === "aceptado");
+  const empPagados = empAceptados.filter((e) => e.estado_pago === "pago_confirmado");
+
+  const statsComunes = {
+    totalPropuestasTalento: totalPropuestasTalento ?? 0,
+    cuposBarismoOcupados: barismoActivos.length,
+    recaudadoBarismo: barismoConfirmados.reduce((sum, b) => sum + Number(b.total), 0),
+    totalEmprendimientos: listaEmp.length,
+    empPreinscritos: listaEmp.filter((e) => e.estado === "preinscrito").length,
+    empAceptados: empAceptados.length,
+    empRechazados: listaEmp.filter((e) => e.estado === "rechazado").length,
+    empPagados: empPagados.length,
+    empPendientesPago: empAceptados.filter((e) => e.estado_pago === "pendiente_pago").length,
+    empRecaudado: empPagados.reduce((sum, e) => sum + Number(e.valor_pago ?? 0), 0),
+  };
 
   if (error || !inscritos) {
     console.error("Error obteniendo estadísticas:", error);
@@ -56,10 +81,7 @@ export async function obtenerEstadisticasAction(): Promise<EstadisticasDashboard
       kitsEntregados: 0,
       fichosNecesarios: 0,
       fichosEntregados: 0,
-      totalPropuestasTalento: totalPropuestasTalento ?? 0,
-      totalEmprendimientos: totalEmprendimientos ?? 0,
-      cuposBarismoOcupados: barismoActivos.length,
-      recaudadoBarismo: barismoConfirmados.reduce((sum, b) => sum + Number(b.total), 0),
+      ...statsComunes,
     };
   }
 
@@ -75,12 +97,9 @@ export async function obtenerEstadisticasAction(): Promise<EstadisticasDashboard
     kitsNecesarios: confirmados.length,
     kitsEntregados: confirmados.filter((i) => i.kit_entregado).length,
     fichosNecesarios: confirmados.reduce((sum, i) => sum + i.cantidad_fichos, 0),
-        fichosEntregados: confirmados
+    fichosEntregados: confirmados
       .filter((i) => i.fichos_entregados)
       .reduce((sum, i) => sum + i.cantidad_fichos, 0),
-    totalPropuestasTalento: totalPropuestasTalento ?? 0,
-    totalEmprendimientos: totalEmprendimientos ?? 0,
-    cuposBarismoOcupados: barismoActivos.length,
-    recaudadoBarismo: barismoConfirmados.reduce((sum, b) => sum + Number(b.total), 0),
+    ...statsComunes,
   };
 }
