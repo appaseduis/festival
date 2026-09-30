@@ -85,6 +85,7 @@ export default function WizardInscripcion({ config, tallas, actividades }: Props
   const [llaveCopiada, setLlaveCopiada] = useState(false);
   const [mostrarGuiaTallas, setMostrarGuiaTallas] = useState(false);
   const LLAVE_BANCOLOMBIA = "0090310223";
+  const linkEventos = "https://a3e6e0.emailsp.com/f/rnl.aspx/?ffg=u_xwqv1acdg=v1bm7=qtyx55.5&x=pv&a=0d78k-m&x=pp&qyj&x=pv&h956j57ix&8i=vxtpNCLM";
 
   async function copiarLlave() {
     try {
@@ -273,6 +274,18 @@ export default function WizardInscripcion({ config, tallas, actividades }: Props
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-gray-200 border-t-4 border-t-uis-green p-5 sm:p-6 md:p-8">
       <div className="mb-8">
+        {linkEventos && (
+          <div className="flex justify-center sm:justify-end mb-4">
+            <a
+              href={linkEventos}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block rounded-lg bg-cyan px-4 py-2 text-sm font-semibold text-white hover:opacity-90"
+            >
+              📅 Conoce los eventos del festival
+            </a>
+          </div>
+        )}
         {/* Versión móvil */}
         <div className="flex sm:hidden items-center justify-between text-xs text-gray-500 mb-2">
           <span className="font-semibold text-navy">
