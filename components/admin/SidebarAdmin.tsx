@@ -10,14 +10,19 @@ const ENLACES = [
   { href: "/admin/actividades", label: "Deportes y actividades" },
   { href: "/admin/pagos", label: "Pagos" },
   { href: "/admin/emprendimientos", label: "Emprendimientos" },
+  { href: "/admin/emprendimientos-externos", label: "Emprendimientos externos" },
   { href: "/admin/talento", label: "Talento Cultural" },
   { href: "/admin/barismo", label: "Competencia Barismo" },
   { href: "/admin/control", label: "Control (QR/Cédula)" },
   { href: "/admin/reportes", label: "Reportes" },
   { href: "/admin/configuracion", label: "Configuración" },
-
-  
 ];
+
+function esActivo(pathname: string | null, href: string) {
+  if (!pathname) return false;
+  if (href === "/admin") return pathname === "/admin";
+  return pathname === href || pathname.startsWith(href + "/");
+}
 
 export default function SidebarAdmin({ email }: { email: string }) {
   const pathname = usePathname();
@@ -31,9 +36,7 @@ export default function SidebarAdmin({ email }: { email: string }) {
 
       <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
         {ENLACES.map((enlace) => {
-          const activo =
-            enlace.href === "/admin" ? pathname === "/admin" : pathname?.startsWith(enlace.href);
-
+          const activo = esActivo(pathname, enlace.href);
           return (
             <Link
               key={enlace.href}

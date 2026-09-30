@@ -91,3 +91,14 @@ export async function actualizarEmprendimientoExternoAction(fd: FormData) {
   });
   revalidatePath("/admin/emprendimientos-externos");
 }
+
+export async function cambiarEstadoExternoAction(fd: FormData) {
+  await requireAdmin();
+  const supabase = createAdminClient();
+  await supabase.rpc("cambiar_estado_emprendimiento_externo", {
+    p_id: String(fd.get("id")),
+    p_estado: String(fd.get("estado")),
+  });
+  revalidatePath("/admin/emprendimientos-externos");
+  revalidatePath("/admin");
+}
