@@ -4,7 +4,14 @@ import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireAdmin } from "@/lib/auth/requireAdmin";
-import { CATEGORIAS_EXT } from "@/lib/validations/emprendimientosExternos";
+import {
+  CATEGORIAS_EXT,
+  type EmprendimientoExterno,
+  type EstadoExterno,
+  type FiltroExterno,
+} from "@/lib/validations/emprendimientosExternos";
+
+type Resp = { ok: true } | { ok: false; error: string };
 
 const schema = z
   .object({
@@ -28,6 +35,8 @@ const schema = z
     path: ["categoria_otro"],
   });
 
+// ---------- Público ----------
+
 export async function obtenerConfigExternosAction() {
   const supabase = createAdminClient();
   const { data } = await supabase
@@ -45,7 +54,7 @@ export async function obtenerConfigExternosAction() {
 
 export async function crearEmprendimientoExternoAction(
   raw: Record<string, FormDataEntryValue>
-): Promise<{ ok: true } | { ok: false; error: string }> {
+): Promise<Resp> {
   const parsed = schema.safeParse({
     ...raw,
     necesita_electricidad: raw.necesita_electricidad === "on",
@@ -68,37 +77,56 @@ export async function crearEmprendimientoExternoAction(
   return { ok: true };
 }
 
-export async function listarEmprendimientosExternosAction() {
+// ---------- Admin ----------
+
+async function ejecutarRpc(fn: string, args: Record<string, unknown>): Promise<Resp> {
   await requireAdmin();
   const supabase = createAdminClient();
-  const { data } = await supabase
+  const { error } = await supabase.rpc(fn, args);
+  if (error) return { ok: false, error: error.message };
+  revalidatePath("/admin/emprendimientos-externos");
+  revalidatePath("/admin");
+  return { ok: true };
+}
+
+export async function listarEmprendimientosExternosAction(
+  filtro: FiltroExterno = "todos",
+  busqueda = ""
+): Promise<EmprendimientoExterno[]> {
+  await requireAdmin();
+  const supabase = createAdminClient();
+  let q = supabase
     .from("emprendimientos_externos")
     .select("*")
     .order("created_at", { ascending: false });
-  return data ?? [];
+
+  if (filtro === "pago_confirmado") q = q.eq("estado_pago", "pago_confirmado");
+  else if (filtro !== "todos") q = q.eq("estado", filtro);
+
+  const texto = busqueda.trim().replace(/[,()%]/g, "");
+  if (texto) {
+    q = q.or(`nombre_emprendimiento.ilike.%${texto}%,nombre_responsable.ilike.%${texto}%`);
+  }
+
+  const { data } = await q;
+  return (data ?? []) as EmprendimientoExterno[];
 }
 
-export async function actualizarEmprendimientoExternoAction(fd: FormData) {
-  await requireAdmin();
-  const valor = Number(fd.get("valor_pago"));
-  const supabase = createAdminClient();
-  await supabase.rpc("actualizar_emprendimiento_externo", {
-    p_id: String(fd.get("id")),
-    p_estado: String(fd.get("estado")),
-    p_estado_pago: String(fd.get("estado_pago")),
-    p_valor: valor > 0 ? valor : null,
-    p_notas: String(fd.get("notas_admin") ?? ""),
-  });
-  revalidatePath("/admin/emprendimientos-externos");
+export async function actualizarEstadoExternoAction(id: string, estado: EstadoExterno) {
+  return ejecutarRpc("cambiar_estado_emprendimiento_externo", { p_id: id, p_estado: estado });
 }
 
-export async function cambiarEstadoExternoAction(fd: FormData) {
-  await requireAdmin();
-  const supabase = createAdminClient();
-  await supabase.rpc("cambiar_estado_emprendimiento_externo", {
-    p_id: String(fd.get("id")),
-    p_estado: String(fd.get("estado")),
-  });
-  revalidatePath("/admin/emprendimientos-externos");
-  revalidatePath("/admin");
+export async function asignarValorExternoAction(id: string, valor: number) {
+  return ejecutarRpc("asignar_valor_emprendimiento_externo", { p_id: id, p_valor: valor });
+}
+
+export async function confirmarPagoExternoAction(
+  id: string,
+  estado: "pago_confirmado" | "pago_rechazado"
+) {
+  return ejecutarRpc("confirmar_pago_emprendimiento_externo", { p_id: id, p_estado_pago: estado });
+}
+
+export async function eliminarExternoAction(id: string) {
+  return ejecutarRpc("eliminar_emprendimiento_externo", { p_id: id });
 }
