@@ -1,4 +1,7 @@
-import { obtenerEstadisticasAction } from "@/app/actions/dashboard";
+import {
+  obtenerEstadisticasAction,
+  obtenerEstadisticasExternosAction,
+} from "@/app/actions/dashboard";
 
 export const dynamic = "force-dynamic";
 
@@ -45,9 +48,13 @@ type Seccion = {
 };
 
 export default async function PaginaDashboard() {
-  const stats = await obtenerEstadisticasAction();
+  const [stats, ext] = await Promise.all([
+    obtenerEstadisticasAction(),
+    obtenerEstadisticasExternosAction(),
+  ]);
 
-  const recaudoTotal = stats.totalRecaudado + stats.recaudadoBarismo + stats.empRecaudado;
+  const recaudoTotal =
+    stats.totalRecaudado + stats.recaudadoBarismo + stats.empRecaudado + ext.recaudado;
 
   const secciones: Seccion[] = [
     {
@@ -103,6 +110,21 @@ export default async function PaginaDashboard() {
         { label: "Pagados", valor: stats.empPagados },
         { label: "Pendientes de pago", valor: stats.empPendientesPago },
         { label: "Recaudado", valor: formatoCOP(stats.empRecaudado) },
+      ],
+    },
+    {
+      titulo: "Emprendimientos Externos",
+      icono: "🏪",
+      color: "#F59E0B",
+      progreso: { actual: ext.pagados, meta: ext.aceptados },
+      tarjetas: [
+        { label: "Propuestas recibidas", valor: ext.total },
+        { label: "Por revisar", valor: ext.preinscritos },
+        { label: "Aceptados", valor: ext.aceptados },
+        { label: "Rechazados", valor: ext.rechazados },
+        { label: "Pagados", valor: ext.pagados },
+        { label: "Pendientes de pago", valor: ext.pendientesPago },
+        { label: "Recaudado", valor: formatoCOP(ext.recaudado) },
       ],
     },
     {

@@ -108,3 +108,24 @@ export async function obtenerEstadisticasAction(): Promise<EstadisticasDashboard
     ...statsComunes,
   };
 }
+
+export async function obtenerEstadisticasExternosAction() {
+  const supabase = createAdminClient();
+  const { data } = await supabase
+    .from("emprendimientos_externos")
+    .select("estado, estado_pago, valor_pago");
+
+  const rows = data ?? [];
+  const aceptados = rows.filter((r) => r.estado === "aceptado");
+  const pagados = rows.filter((r) => r.estado_pago === "pago_confirmado");
+
+  return {
+    total: rows.length,
+    preinscritos: rows.filter((r) => r.estado === "preinscrito").length,
+    aceptados: aceptados.length,
+    rechazados: rows.filter((r) => r.estado === "rechazado").length,
+    pagados: pagados.length,
+    pendientesPago: aceptados.filter((r) => r.estado_pago !== "pago_confirmado").length,
+    recaudado: pagados.reduce((s, r) => s + (r.valor_pago ?? 0), 0),
+  };
+}

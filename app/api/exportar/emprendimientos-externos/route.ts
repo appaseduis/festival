@@ -1,0 +1,102 @@
+import { NextResponse } from "next/server";
+import ExcelJS from "exceljs";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { requireAdmin } from "@/lib/auth/requireAdmin";
+import { aplicarEstiloEncabezado, autoajustarColumnas } from "@/lib/excel/estilos";
+
+const ETIQUETA_ESTADO: Record<string, string> = {
+  preinscrito: "Preinscrito",
+  aceptado: "Aceptado",
+  rechazado: "Rechazado",
+};
+
+const ETIQUETA_ESTADO_PAGO: Record<string, string> = {
+  pendiente_pago: "Pendiente de pago",
+  pago_confirmado: "Pago confirmado",
+  pago_rechazado: "Pago rechazado",
+};
+
+const ETIQUETA_METODO_PAGO: Record<string, string> = {
+  bold: "Bold",
+  bancolombia: "Bancolombia",
+};
+
+export async function GET() {
+  await requireAdmin();
+  const supabase = createAdminClient();
+
+  const { data, error } = await supabase
+    .from("emprendimientos_externos")
+    .select("*")
+    .order("created_at", { ascending: true });
+
+  if (error || !data) {
+    return NextResponse.json(
+      { error: "No se pudieron obtener los emprendimientos externos" },
+      { status: 500 }
+    );
+  }
+
+  const workbook = new ExcelJS.Workbook();
+  const hoja = workbook.addWorksheet("Emprendimientos Externos");
+
+  hoja.columns = [
+    { header: "Tipo", key: "tipo" },
+    { header: "Emprendimiento / Marca", key: "nombre_emprendimiento" },
+    { header: "Descripción", key: "descripcion" },
+    { header: "Responsable", key: "nombre_responsable" },
+    { header: "Cédula / NIT", key: "documento" },
+    { header: "Ciudad", key: "ciudad" },
+    { header: "Correo", key: "correo" },
+    { header: "Teléfono", key: "telefono" },
+    { header: "Facebook", key: "facebook" },
+    { header: "Instagram", key: "instagram" },
+    { header: "Página web", key: "pagina_web" },
+    { header: "Categoría", key: "categoria" },
+    { header: "Necesita electricidad", key: "necesita_electricidad" },
+    { header: "Estado", key: "estado" },
+    { header: "Valor a pagar", key: "valor_pago" },
+    { header: "Método de pago", key: "metodo_pago" },
+    { header: "Estado de pago", key: "estado_pago" },
+    { header: "Notas admin", key: "notas_admin" },
+    { header: "Fecha preinscripción", key: "created_at" },
+  ];
+
+  for (const e of data) {
+    hoja.addRow({
+      tipo: "Externo",
+      nombre_emprendimiento: e.nombre_emprendimiento,
+      descripcion: e.descripcion ?? "",
+      nombre_responsable: e.nombre_responsable,
+      documento: e.documento,
+      ciudad: e.ciudad,
+      correo: e.correo,
+      telefono: e.telefono,
+      facebook: e.facebook ?? "",
+      instagram: e.instagram ?? "",
+      pagina_web: e.pagina_web ?? "",
+      categoria: e.categoria === "Otro" ? `Otro: ${e.categoria_otro ?? ""}` : e.categoria,
+      necesita_electricidad: e.necesita_electricidad ? "Sí" : "No",
+      estado: ETIQUETA_ESTADO[e.estado] ?? e.estado,
+      valor_pago: e.valor_pago ?? "",
+      metodo_pago: e.metodo_pago ? (ETIQUETA_METODO_PAGO[e.metodo_pago] ?? e.metodo_pago) : "",
+      estado_pago: e.estado_pago ? (ETIQUETA_ESTADO_PAGO[e.estado_pago] ?? e.estado_pago) : "",
+      notas_admin: e.notas_admin ?? "",
+      created_at: new Date(e.created_at).toLocaleString("es-CO"),
+    });
+  }
+
+  hoja.getColumn("valor_pago").numFmt = '"$"#,##0';
+
+  aplicarEstiloEncabezado(hoja.getRow(1));
+  autoajustarColumnas(hoja);
+
+  const buffer = await workbook.xlsx.writeBuffer();
+
+  return new NextResponse(buffer, {
+    headers: {
+      "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "Content-Disposition": `attachment; filename="emprendimientos-externos.xlsx"`,
+    },
+  });
+}
