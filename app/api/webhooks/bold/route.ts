@@ -11,6 +11,31 @@ type PayloadBold = {
   };
 };
 
+type Modulo = {
+  prefijo: string;
+  tabla: string;
+  rpc: string;
+  paramId: string;
+  paramEstado: string;
+  conConfirmadoPor: boolean;
+};
+
+// El prefijo del order-id define el módulo. Sin prefijo = inscritos.
+const MODULOS: Modulo[] = [
+  { prefijo: "bar_", tabla: "competencia_barismo", rpc: "confirmar_pago_barismo", paramId: "p_id", paramEstado: "p_nuevo_estado", conConfirmadoPor: true },
+  { prefijo: "emp_", tabla: "emprendimientos", rpc: "confirmar_pago_emprendimiento", paramId: "p_id", paramEstado: "p_nuevo_estado", conConfirmadoPor: false },
+  { prefijo: "ext_", tabla: "emprendimientos_externos", rpc: "confirmar_pago_emprendimiento_externo", paramId: "p_id", paramEstado: "p_estado_pago", conConfirmadoPor: false },
+];
+
+const MODULO_INSCRITOS: Modulo = {
+  prefijo: "",
+  tabla: "inscritos",
+  rpc: "confirmar_pago",
+  paramId: "p_inscrito_id",
+  paramEstado: "p_nuevo_estado",
+  conConfirmadoPor: true,
+};
+
 export async function POST(req: NextRequest) {
   const rawBody = await req.text();
   const firmaRecibida = req.headers.get("x-bold-signature");
@@ -23,17 +48,11 @@ export async function POST(req: NextRequest) {
   const secretKey = process.env.BOLD_MODO_PRUEBAS === "true" ? "" : process.env.BOLD_SECRET_KEY!;
 
   const bodyBase64 = Buffer.from(rawBody, "utf-8").toString("base64");
-  const firmaCalculada = crypto
-    .createHmac("sha256", secretKey)
-    .update(bodyBase64)
-    .digest("hex");
+  const firmaCalculada = crypto.createHmac("sha256", secretKey).update(bodyBase64).digest("hex");
 
-  const firmasCoinciden = crypto.timingSafeEqual(
-    Buffer.from(firmaCalculada),
-    Buffer.from(firmaRecibida)
-  );
-
-  if (!firmasCoinciden) {
+  const a = Buffer.from(firmaCalculada);
+  const b = Buffer.from(firmaRecibida);
+  if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) {
     return NextResponse.json({ error: "invalid_signature" }, { status: 400 });
   }
 
@@ -44,47 +63,22 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "invalid_payload" }, { status: 400 });
   }
 
-  // El order-id que enviamos al crear el botón queda en metadata.reference
   const reference = payload.data?.metadata?.reference;
-
-  if (!reference) {
-    // Confirmamos 200 igual, para que Bold no reintente por algo que no podemos procesar
-    return NextResponse.json({ ok: true, ignorado: true });
-  }
+  if (!reference) return NextResponse.json({ ok: true, ignorado: true });
 
   if (payload.type !== "SALE_APPROVED" && payload.type !== "SALE_REJECTED") {
-    // Anulaciones u otros eventos: por ahora no cambian estado_pago automáticamente
     return NextResponse.json({ ok: true, ignorado: true });
   }
 
   const nuevoEstado = payload.type === "SALE_APPROVED" ? "pago_confirmado" : "pago_rechazado";
+  const modulo = MODULOS.find((m) => reference.startsWith(m.prefijo)) ?? MODULO_INSCRITOS;
+  const id = modulo.prefijo ? reference.slice(modulo.prefijo.length) : reference;
 
   const supabase = createAdminClient();
 
-  // El prefijo del order-id nos dice a qué módulo pertenece el pago.
-  const esBarismo = reference.startsWith("bar_");
-  const esEmprendimiento = reference.startsWith("emp_");
-  const id = esBarismo
-    ? reference.replace("bar_", "")
-    : esEmprendimiento
-    ? reference.replace("emp_", "")
-    : reference;
-
-  const tabla = esBarismo
-    ? "competencia_barismo"
-    : esEmprendimiento
-    ? "emprendimientos"
-    : "inscritos";
-  const rpc = esBarismo
-    ? "confirmar_pago_barismo"
-    : esEmprendimiento
-    ? "confirmar_pago_emprendimiento"
-    : "confirmar_pago";
-  const paramId = esBarismo || esEmprendimiento ? "p_id" : "p_inscrito_id";
-
-  // Idempotencia: si ya está en el estado final, no lo reprocesamos
+  // Idempotencia
   const { data: actual } = await supabase
-    .from(tabla)
+    .from(modulo.tabla)
     .select("estado_pago")
     .eq("id", id)
     .maybeSingle();
@@ -93,15 +87,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true, yaProcesado: true });
   }
 
-    const parametrosRpc: Record<string, string> = {
-    [paramId]: id,
-    p_nuevo_estado: nuevoEstado,
+  const parametrosRpc: Record<string, string> = {
+    [modulo.paramId]: id,
+    [modulo.paramEstado]: nuevoEstado,
   };
-  if (!esEmprendimiento) {
-    parametrosRpc.p_confirmado_por = "bold_webhook";
-  }
+  if (modulo.conConfirmadoPor) parametrosRpc.p_confirmado_por = "bold_webhook";
 
-  const { error } = await supabase.rpc(rpc, parametrosRpc);
+  const { error } = await supabase.rpc(modulo.rpc, parametrosRpc);
 
   if (error) {
     console.error("Error confirmando pago desde webhook de Bold:", error);

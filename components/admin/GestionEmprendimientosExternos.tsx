@@ -120,14 +120,17 @@ export default function GestionEmprendimientosExternos({
     }
   }
 
-  function copiarMensajePago(e: EmprendimientoExterno) {
+    function copiarMensajePago(e: EmprendimientoExterno) {
+    const link = `${window.location.origin}/emprendimientos-externos/pago/${e.id}`;
     const mensaje = `Hola ${e.nombre_responsable}, buenos días 👋
 
 ¡Tu emprendimiento externo "${e.nombre_emprendimiento}" ha sido ACEPTADO para la feria del Festival del Egresado UIS! 🎉
 
 Valor a pagar para tu stand (tarifa única emprendimientos externos): ${formatoCOP(e.valor_pago ?? 0)}
 
-Te compartiremos por este medio las instrucciones para realizar el pago.
+Realiza tu pago aquí: ${link}
+
+¿Necesitas ayuda? Escríbenos por WhatsApp: https://wa.me/573242606004
 
 Cualquier duda, quedamos atentos. ¡Nos vemos en octubre! 🎓`;
 

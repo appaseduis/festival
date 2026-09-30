@@ -130,3 +130,38 @@ export async function confirmarPagoExternoAction(
 export async function eliminarExternoAction(id: string) {
   return ejecutarRpc("eliminar_emprendimiento_externo", { p_id: id });
 }
+
+export type DatosPagoExterno = {
+  id: string;
+  nombre_emprendimiento: string;
+  nombre_responsable: string;
+  valor_pago: number | null;
+  estado_pago: "pendiente_pago" | "pago_confirmado" | "pago_rechazado";
+  metodo_pago: "bold" | "bancolombia" | null;
+};
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+export async function obtenerDatosPagoExternoAction(id: string): Promise<DatosPagoExterno | null> {
+  if (!UUID_RE.test(id)) return null;
+  const supabase = createAdminClient();
+  const { data } = await supabase
+    .from("emprendimientos_externos")
+    .select("id, nombre_emprendimiento, nombre_responsable, valor_pago, estado_pago, metodo_pago, estado")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (!data || data.estado !== "aceptado") return null;
+  const { estado, ...datos } = data;
+  return datos as DatosPagoExterno;
+}
+
+export async function seleccionarMetodoPagoExternoAction(id: string, metodo: "bold" | "bancolombia") {
+  if (!UUID_RE.test(id)) return { ok: false as const };
+  const supabase = createAdminClient();
+  const { error } = await supabase.rpc("seleccionar_metodo_pago_externo", {
+    p_id: id,
+    p_metodo: metodo,
+  });
+  return { ok: !error };
+}
