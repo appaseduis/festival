@@ -8,6 +8,7 @@ const EXPORTACIONES = [
   { href: "/api/exportar/fichos", label: "Fichos" },
   { href: "/api/exportar/entregas", label: "Control de entregas" },
   { href: "/api/exportar/emprendimientos", label: "Emprendimientos" },
+  { href: "/api/exportar/emprendimientos-externos", label: "Emprendimientos Externos" },
   { href: "/api/exportar/talento", label: "Talento Cultural" },
   { href: "/api/exportar/barismo", label: "Barismo" },
 ];
