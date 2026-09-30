@@ -67,9 +67,7 @@ export default async function EmprendimientosExternosPage() {
             </a>
           )}
           <p className="text-xs bg-amber-50 border border-amber-200 text-amber-900 rounded-lg p-3">
-            Este formulario es una <strong>preinscripción</strong>. No se realiza ningún pago
-            en este momento. El equipo de ASEDUIS llevará a cabo la revisión y selección de los
-            emprendimientos.
+            Este formulario es una <strong>preinscripción</strong>. No se realiza ningún pago en este momento. El equipo de ASEDUIS llevará a cabo la revisión y selección de los emprendimientos, bajo criterios  establecidos por la misma Asociación.
           </p>
         </div>
 
